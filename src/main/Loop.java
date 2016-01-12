@@ -3,10 +3,10 @@ package main;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import main.rendering.Buffer;
 import main.rendering.GBuffer;
+import main.rendering.GBufferTexture;
 import main.utils.FullscreenQuad;
 import main.utils.ResourceLoader;
 
@@ -19,16 +19,22 @@ public class Loop {
   private final GBuffer gbuffer = GBuffer.withSize(WIDTH, HEIGHT);
   private final OrthographicCamera camera = createCamera();
   private float elapsedTime = 0;
-  private final Texture colorTexture = ResourceLoader.loadTexture("data/textures/wall_color.png");
-  private final Texture emissiveTexture = ResourceLoader.loadTexture("data/textures/wall_emissive.png");
   private final Buffer buffer = new Buffer();
   private final FullscreenQuad fullscreenQuad = new FullscreenQuad();
   private final ShaderProgram fxaaShader = ResourceLoader.loadShader("data/screenspace.vert", "data/fxaa.frag");
+  private final GBufferTexture gBufferTexture = loadTestGBufferTexture();
 
   private static OrthographicCamera createCamera() {
     OrthographicCamera cam = new OrthographicCamera();
     cam.setToOrtho(true, WIDTH, HEIGHT);
     return cam;
+  }
+
+  private static GBufferTexture loadTestGBufferTexture() {
+    GBufferTexture texture = new GBufferTexture();
+    texture.color = ResourceLoader.loadTexture("data/textures/wall_color.png");
+    texture.emissive = ResourceLoader.loadTexture("data/textures/wall_emissive.png");
+    return texture;
   }
 
   public void onUpdate(float delta) {
@@ -40,12 +46,12 @@ public class Loop {
 
     gbuffer.color.begin();
     clearContext();
-    buffer.paint(colorTexture);
+    buffer.paint(gBufferTexture.color);
     gbuffer.color.end();
 
     gbuffer.emissive.begin();
     clearContext();
-    buffer.paint(emissiveTexture);
+    buffer.paint(gBufferTexture.emissive);
     gbuffer.emissive.end();
 
     buffer.reset();
