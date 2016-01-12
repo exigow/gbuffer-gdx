@@ -3,6 +3,8 @@ package main;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import main.rendering.Buffer;
 import main.rendering.GBuffer;
@@ -41,19 +43,9 @@ public class Loop {
     elapsedTime += delta;
 
     buffer.updateProjection(camera.combined);
-
     renderQuad(Gdx.input.getX(), Gdx.input.getY());
-
-    gbuffer.color.begin();
-    clearContext();
-    buffer.paint(gBufferTexture.color);
-    gbuffer.color.end();
-
-    gbuffer.emissive.begin();
-    clearContext();
-    buffer.paint(gBufferTexture.emissive);
-    gbuffer.emissive.end();
-
+    fillUsing(gbuffer.color, gBufferTexture.color);
+    fillUsing(gbuffer.emissive, gBufferTexture.emissive);
     buffer.reset();
 
     gbuffer.color.getColorBufferTexture().bind(0);
@@ -66,6 +58,13 @@ public class Loop {
     fxaaShader.setUniform2fv("u_viewportInverse", viewportInverse, 0, viewportInverse.length);
     fullscreenQuad.render(fxaaShader);
     fxaaShader.end();
+  }
+
+  private void fillUsing(FrameBuffer frameBuffer, Texture texture) {
+    frameBuffer.begin();
+    clearContext();
+    buffer.paint(texture);
+    frameBuffer.end();
   }
 
   private static void clearContext() {
