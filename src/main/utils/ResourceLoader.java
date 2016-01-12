@@ -16,6 +16,8 @@ public class ResourceLoader {
 
   public static Texture loadTexture(String texturePath) {
     Texture texture = new Texture(Gdx.files.internal(texturePath));
+    Texture.TextureFilter filter = Texture.TextureFilter.Linear;
+    texture.setFilter(filter, filter);
     log("Texture loaded succesfully (path: " + texturePath + ")");
     return texture;
   }

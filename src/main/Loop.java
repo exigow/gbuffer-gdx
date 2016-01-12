@@ -14,12 +14,12 @@ import static com.badlogic.gdx.math.MathUtils.sin;
 
 public class Loop {
 
-  private final static int WIDTH = 800;
-  private final static int HEIGHT = 600;
+  private final static int WIDTH = Gdx.graphics.getWidth();
+  private final static int HEIGHT = Gdx.graphics.getHeight();
   private final FrameBuffer colorBuffer = new FrameBuffer(Pixmap.Format.RGB888, WIDTH, HEIGHT, false);
   private final OrthographicCamera camera = createCamera();
   private float elapsedTime = 0;
-  private final Texture texture = ResourceLoader.loadTexture("data/test.png");
+  private final Texture texture = ResourceLoader.loadTexture("data/textures/wall_color.png");
   private final Buffer buffer = new Buffer();
   private final FullscreenQuad fullscreenQuad = new FullscreenQuad();
   private final ShaderProgram fxaaShader = ResourceLoader.loadShader("data/screenspace.vert", "data/fxaa.frag");
@@ -53,10 +53,11 @@ public class Loop {
   }
 
   private void renderQuad(float x, float y) {
-    buffer.putVertex(x - 64 + fun(1), y - 64 + fun(2), 0, 0);
-    buffer.putVertex(x + 64 + fun(3), y - 64 + fun(4), 1, 0);
-    buffer.putVertex(x + 64 + fun(5), y + 64 + fun(6), 1, 1);
-    buffer.putVertex(x - 64 + fun(7), y + 64 + fun(8), 0, 1);
+    float scale = 256;
+    buffer.putVertex(x - scale + fun(1), y - scale + fun(2), 0, 0);
+    buffer.putVertex(x + scale + fun(3), y - scale + fun(4), 1, 0);
+    buffer.putVertex(x + scale + fun(5), y + scale + fun(6), 1, 1);
+    buffer.putVertex(x - scale + fun(7), y + scale + fun(8), 0, 1);
   }
 
   private float fun(float mul) {
