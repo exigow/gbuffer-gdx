@@ -1,4 +1,4 @@
-package main;
+package main.rendering;
 
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
