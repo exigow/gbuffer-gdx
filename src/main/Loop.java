@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import main.rendering.GBuffer;
 import main.utils.FullscreenQuad;
 import main.utils.ResourceLoader;
 
@@ -16,7 +17,7 @@ public class Loop {
 
   private final static int WIDTH = Gdx.graphics.getWidth();
   private final static int HEIGHT = Gdx.graphics.getHeight();
-  private final FrameBuffer colorBuffer = new FrameBuffer(Pixmap.Format.RGB888, WIDTH, HEIGHT, false);
+  private final GBuffer gbuffer = GBuffer.withSize(WIDTH, HEIGHT);
   private final OrthographicCamera camera = createCamera();
   private float elapsedTime = 0;
   private final Texture texture = ResourceLoader.loadTexture("data/textures/wall_color.png");
@@ -33,14 +34,14 @@ public class Loop {
   public void onUpdate(float delta) {
     elapsedTime += delta;
 
-    colorBuffer.begin();
-    Gdx.gl20.glClearColor(.125f, .125f, .125f, 1);
+    gbuffer.color.begin();
+    Gdx.gl20.glClearColor(0, 0, 0, 1);
     Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
     renderQuad(Gdx.input.getX(), Gdx.input.getY());
     buffer.flush(camera.combined, texture);
-    colorBuffer.end();
+    gbuffer.color.end();
 
-    colorBuffer.getColorBufferTexture().bind(0);
+    gbuffer.color.getColorBufferTexture().bind(0);
     fxaaShader.begin();
     fxaaShader.setUniformi("u_texture", 0);
     fxaaShader.setUniformf("FXAA_REDUCE_MIN", 1f / 128f);
