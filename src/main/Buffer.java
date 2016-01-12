@@ -3,7 +3,7 @@ package main;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
-import main.utils.ShaderLoader;
+import main.utils.ResourceLoader;
 
 public class Buffer {
 
@@ -15,7 +15,7 @@ public class Buffer {
   private int pivot = 0;
 
   public Buffer() {
-    bufferShader = ShaderLoader.loadAndCompile("data/buffer.vert", "data/buffer.frag");
+    bufferShader = ResourceLoader.loadShader("data/buffer.vert", "data/buffer.frag");
   }
 
   private static Mesh initialiseEmptyMesh() {

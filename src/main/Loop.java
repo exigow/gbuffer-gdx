@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import main.utils.FullscreenQuad;
-import main.utils.ShaderLoader;
+import main.utils.ResourceLoader;
 
 import static com.badlogic.gdx.math.MathUtils.sin;
 
@@ -19,10 +19,10 @@ public class Loop {
   private final FrameBuffer colorBuffer = new FrameBuffer(Pixmap.Format.RGB888, WIDTH, HEIGHT, false);
   private final OrthographicCamera camera = createCamera();
   private float elapsedTime = 0;
-  private final Texture texture = new Texture(Gdx.files.internal("data/test.png"));
+  private final Texture texture = ResourceLoader.loadTexture("data/test.png");
   private final Buffer buffer = new Buffer();
   private final FullscreenQuad fullscreenQuad = new FullscreenQuad();
-  private final ShaderProgram fxaaShader = ShaderLoader.loadAndCompile("data/screenspace.vert", "data/fxaa.frag");
+  private final ShaderProgram fxaaShader = ResourceLoader.loadShader("data/screenspace.vert", "data/fxaa.frag");
 
   private static OrthographicCamera createCamera() {
     OrthographicCamera cam = new OrthographicCamera();

@@ -9,14 +9,10 @@ uniform float FXAA_SPAN_MAX;
 varying vec2 v_texCoords;
 
 vec4 fxaa(sampler2D texture, vec2 texCoords, vec2 viewportInv) {
-	vec3 rgbNW = texture2D(texture,
-			texCoords.xy + (vec2(-1.0, -1.0) * viewportInv)).xyz;
-	vec3 rgbNE = texture2D(texture,
-			texCoords.xy + (vec2(+1.0, -1.0) * viewportInv)).xyz;
-	vec3 rgbSW = texture2D(texture,
-			texCoords.xy + (vec2(-1.0, +1.0) * viewportInv)).xyz;
-	vec3 rgbSE = texture2D(texture,
-			texCoords.xy + (vec2(+1.0, +1.0) * viewportInv)).xyz;
+	vec3 rgbNW = texture2D(texture, texCoords.xy + (vec2(-1.0, -1.0) * viewportInv)).xyz;
+	vec3 rgbNE = texture2D(texture, texCoords.xy + (vec2(+1.0, -1.0) * viewportInv)).xyz;
+	vec3 rgbSW = texture2D(texture, texCoords.xy + (vec2(-1.0, +1.0) * viewportInv)).xyz;
+	vec3 rgbSE = texture2D(texture, texCoords.xy + (vec2(+1.0, +1.0) * viewportInv)).xyz;
 	vec3 rgbM = texture2D(texture, texCoords.xy).xyz;
 
 	vec3 luma = vec3(0.299, 0.587, 0.114);
@@ -29,14 +25,12 @@ vec4 fxaa(sampler2D texture, vec2 texCoords, vec2 viewportInv) {
 	float lumaMin = min(lumaM, min(min(lumaNW, lumaNE), min(lumaSW, lumaSE)));
 	float lumaMax = max(lumaM, max(max(lumaNW, lumaNE), max(lumaSW, lumaSE)));
 
-	vec2 dir;
-	dir.x = -((lumaNW + lumaNE) - (lumaSW + lumaSE));
-	dir.y = ((lumaNW + lumaSW) - (lumaNE + lumaSE));
+	vec2 dir = vec2(
+		-((lumaNW + lumaNE) - (lumaSW + lumaSE)),
+		((lumaNW + lumaSW) - (lumaNE + lumaSE))
+	);
 
-	float dirReduce = max(
-			(lumaNW + lumaNE + lumaSW + lumaSE) * (0.25 * FXAA_REDUCE_MUL),
-			FXAA_REDUCE_MIN);
-
+	float dirReduce = max((lumaNW + lumaNE + lumaSW + lumaSE) * (0.25 * FXAA_REDUCE_MUL), FXAA_REDUCE_MIN);
 	float rcpDirMin = 1.0 / (min(abs(dir.x), abs(dir.y)) + dirReduce);
 
 	dir = min(vec2(FXAA_SPAN_MAX, FXAA_SPAN_MAX),
@@ -59,8 +53,7 @@ vec4 fxaa(sampler2D texture, vec2 texCoords, vec2 viewportInv) {
 													+ dir * (3.0 / 3.0 - 0.5)).xyz);
 	float lumaB = dot(rgbB, luma);
 
-	vec4 color = vec4(0.0);
-
+	vec4 color;
 	if ((lumaB < lumaMin) || (lumaB > lumaMax)) {
 		color.xyz = rgbA;
 	} else {
