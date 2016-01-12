@@ -41,7 +41,6 @@ public class FullscreenQuad {
       new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, 2, "a_texCoord0")
     );
     mesh.setVertices(vertices);
-    mesh.getIndicesBuffer().position(0);
     return mesh;
   }
 

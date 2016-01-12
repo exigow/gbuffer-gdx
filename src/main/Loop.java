@@ -16,7 +16,7 @@ public class Loop {
 
   private final static int WIDTH = 800;
   private final static int HEIGHT = 600;
-  private final FrameBuffer colorBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, WIDTH, HEIGHT, false);
+  private final FrameBuffer colorBuffer = new FrameBuffer(Pixmap.Format.RGB888, WIDTH, HEIGHT, false);
   private final OrthographicCamera camera = createCamera();
   private float elapsedTime = 0;
   private final Texture texture = new Texture(Gdx.files.internal("data/test.png"));
@@ -46,7 +46,8 @@ public class Loop {
     fxaaShader.setUniformf("FXAA_REDUCE_MIN", 1f / 128f);
     fxaaShader.setUniformf("FXAA_REDUCE_MUL", 1f / 8f);
     fxaaShader.setUniformf("FXAA_SPAN_MAX", 8f);
-    fxaaShader.setUniform2fv("u_viewportInverse", new float[]{1f / WIDTH, 1f / HEIGHT}, 0, 2);
+    float[] viewportInverse = new float[] {1f / WIDTH, 1f / HEIGHT};
+    fxaaShader.setUniform2fv("u_viewportInverse", viewportInverse, 0, viewportInverse.length);
     fullscreenQuad.render(fxaaShader);
     fxaaShader.end();
   }
@@ -59,7 +60,7 @@ public class Loop {
   }
 
   private float fun(float mul) {
-    return sin(elapsedTime * mul) * 16;
+    return sin(elapsedTime + mul) * 16;
   }
 
 }
