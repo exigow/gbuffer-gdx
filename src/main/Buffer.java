@@ -1,9 +1,9 @@
 package main;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
+import main.utils.ShaderLoader;
 
 public class Buffer {
 
@@ -15,14 +15,7 @@ public class Buffer {
   private int pivot = 0;
 
   public Buffer() {
-    bufferShader = loadShader();
-  }
-
-  private static ShaderProgram loadShader() {
-    ShaderProgram shader = new ShaderProgram(Gdx.files.internal("data/buffer.vert"), Gdx.files.internal("data/buffer.frag"));
-    if (!shader.isCompiled())
-      throw new RuntimeException(shader.getLog());
-    return shader;
+    bufferShader = ShaderLoader.loadAndCompile("data/buffer.vert", "data/buffer.frag");
   }
 
   private static Mesh initialiseEmptyMesh() {
