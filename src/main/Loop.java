@@ -19,7 +19,8 @@ public class Loop {
   private final GBuffer gbuffer = GBuffer.withSize(WIDTH, HEIGHT);
   private final OrthographicCamera camera = createCamera();
   private float elapsedTime = 0;
-  private final Texture texture = ResourceLoader.loadTexture("data/textures/wall_color.png");
+  private final Texture colorTexture = ResourceLoader.loadTexture("data/textures/wall_color.png");
+  private final Texture emissiveTexture = ResourceLoader.loadTexture("data/textures/wall_emissive.png");
   private final Buffer buffer = new Buffer();
   private final FullscreenQuad fullscreenQuad = new FullscreenQuad();
   private final ShaderProgram fxaaShader = ResourceLoader.loadShader("data/screenspace.vert", "data/fxaa.frag");
@@ -33,12 +34,21 @@ public class Loop {
   public void onUpdate(float delta) {
     elapsedTime += delta;
 
-    gbuffer.color.begin();
-    Gdx.gl20.glClearColor(0, 0, 0, 1);
-    Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    buffer.updateProjection(camera.combined);
+
     renderQuad(Gdx.input.getX(), Gdx.input.getY());
-    buffer.flush(camera.combined, texture);
+
+    gbuffer.color.begin();
+    clearContext();
+    buffer.paint(colorTexture);
     gbuffer.color.end();
+
+    gbuffer.emissive.begin();
+    clearContext();
+    buffer.paint(emissiveTexture);
+    gbuffer.emissive.end();
+
+    buffer.reset();
 
     gbuffer.color.getColorBufferTexture().bind(0);
     fxaaShader.begin();
@@ -50,6 +60,11 @@ public class Loop {
     fxaaShader.setUniform2fv("u_viewportInverse", viewportInverse, 0, viewportInverse.length);
     fullscreenQuad.render(fxaaShader);
     fxaaShader.end();
+  }
+
+  private static void clearContext() {
+    Gdx.gl20.glClearColor(0, 0, 0, 1);
+    Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
   }
 
   private void renderQuad(float x, float y) {

@@ -13,6 +13,7 @@ public class Buffer {
   private final float[] vertices = new float[QUADS_MAX_COUNT * 2 * 2];
   private final ShaderProgram bufferShader;
   private int pivot = 0;
+  private final Matrix4 projectionMatrix = new Matrix4();
 
   public Buffer() {
     bufferShader = ResourceLoader.loadShader("data/buffer.vert", "data/buffer.frag");
@@ -52,7 +53,11 @@ public class Buffer {
       vertices[pivot++] = value;
   }
 
-  public void flush(Matrix4 projectionMatrix, Texture texture) {
+  public void updateProjection(Matrix4 actualized) {
+    projectionMatrix.set(actualized);
+  }
+
+  public void paint(Texture texture) {
     texture.bind();
     bufferShader.begin();
     bufferShader.setUniformMatrix("u_projTrans", projectionMatrix);
@@ -61,6 +66,9 @@ public class Buffer {
     mesh.getIndicesBuffer().position(0);
     mesh.render(bufferShader, GL20.GL_TRIANGLES, 0, 3 * QUADS_MAX_COUNT);
     bufferShader.end();
+  }
+
+  public void reset() {
     pivot = 0;
   }
 
