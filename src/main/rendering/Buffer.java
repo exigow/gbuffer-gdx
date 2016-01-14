@@ -58,7 +58,7 @@ public class Buffer {
   }
 
   public void paint(Texture texture) {
-    texture.bind();
+    texture.bind(0);
     bufferShader.begin();
     bufferShader.setUniformMatrix("u_projTrans", projectionMatrix);
     bufferShader.setUniformi("u_texture", 0);

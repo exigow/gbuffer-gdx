@@ -10,7 +10,7 @@ public class ResourceLoader {
     ShaderProgram shader = new ShaderProgram(Gdx.files.internal(vertexPath), Gdx.files.internal(fragmentPath));
     if (!shader.isCompiled())
       throw new IllegalArgumentException("Error compiling shader: " + shader.getLog());
-    log("Shader loaded successfully (vertex: " + vertexPath + ", fragment: " + fragmentPath + ")");
+    Logger.log("Shader loaded successfully (vertex: " + vertexPath + ", fragment: " + fragmentPath + ")");
     return shader;
   }
 
@@ -18,12 +18,8 @@ public class ResourceLoader {
     Texture texture = new Texture(Gdx.files.internal(texturePath));
     Texture.TextureFilter filter = Texture.TextureFilter.Linear;
     texture.setFilter(filter, filter);
-    log("Texture loaded succesfully (path: " + texturePath + ")");
+    Logger.log("Texture loaded succesfully (path: " + texturePath + ")");
     return texture;
-  }
-
-  private static void log(String str) {
-    System.out.println(str);
   }
 
 }

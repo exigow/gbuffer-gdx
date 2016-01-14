@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import main.rendering.Buffer;
 import main.rendering.GBuffer;
 import main.rendering.GBufferTexture;
@@ -24,7 +25,10 @@ public class Loop {
   private final Buffer buffer = new Buffer();
   private final FullscreenQuad fullscreenQuad = new FullscreenQuad();
   private final ShaderProgram fxaaShader = ResourceLoader.loadShader("data/screenspace.vert", "data/fxaa.frag");
+  private final ShaderProgram kawaseShader = ResourceLoader.loadShader("data/screenspace.vert", "data/kawase.frag");
+  private final ShaderProgram composeBlurs = ResourceLoader.loadShader("data/screenspace.vert", "data/composeBlurs.frag");
   private final GBufferTexture gBufferTexture = loadTestGBufferTexture();
+  private final ShapeRenderer shapeRenderer = new ShapeRenderer();
 
   private static OrthographicCamera createCamera() {
     OrthographicCamera cam = new OrthographicCamera();
@@ -48,7 +52,17 @@ public class Loop {
     fillUsing(gbuffer.emissive, gBufferTexture.emissive);
     buffer.reset();
 
-    gbuffer.color.getColorBufferTexture().bind(0);
+    /*gbuffer.emissive.begin();
+    shapeRenderer.setProjectionMatrix(camera.combined);
+    shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+    shapeRenderer.setColor(0, 1, 0, 1);
+    shapeRenderer.circle(Gdx.input.getX(), Gdx.input.getY(), 64);
+    shapeRenderer.setColor(1, 0, 0, 1);
+    shapeRenderer.circle(256, 256, 64);
+    shapeRenderer.end();
+    gbuffer.emissive.end();*/
+
+    /*gbuffer.color.getColorBufferTexture().bind(0);
     fxaaShader.begin();
     fxaaShader.setUniformi("u_texture", 0);
     fxaaShader.setUniformf("FXAA_REDUCE_MIN", 1f / 128f);
@@ -57,12 +71,54 @@ public class Loop {
     float[] viewportInverse = new float[] {1f / WIDTH, 1f / HEIGHT};
     fxaaShader.setUniform2fv("u_viewportInverse", viewportInverse, 0, viewportInverse.length);
     fullscreenQuad.render(fxaaShader);
-    fxaaShader.end();
+    fxaaShader.end();*/
+
+    /*gbuffer.blurDownsamples.get(0).begin();
+    gbuffer.emissive.getColorBufferTexture().bind(0);
+    kawaseShader.begin();
+    kawaseShader.setUniformi("u_texture", 0);
+    fullscreenQuad.render(kawaseShader);
+    kawaseShader.end();
+    gbuffer.blurDownsamples.get(0).end();*/
+    blitUsingKawase(gbuffer.emissive, gbuffer.blurDownsamples.get(0));
+    blitUsingKawase(gbuffer.blurDownsamples.get(0), gbuffer.blurDownsamples.get(1));
+    blitUsingKawase(gbuffer.blurDownsamples.get(1), gbuffer.blurDownsamples.get(2));
+    blitUsingKawase(gbuffer.blurDownsamples.get(2), gbuffer.blurDownsamples.get(3));
+
+
+
+    composeBlurs.begin();
+    for (int i = 0; i < gbuffer.blurDownsamples.size(); i++) {
+      gbuffer.blurDownsamples.get(i).getColorBufferTexture().bind(i);
+      composeBlurs.setUniformi("u_texture" + i, i);
+    }
+    fullscreenQuad.render(composeBlurs);
+    composeBlurs.end();
+
+    /*gbuffer.blurDownsamples.get(3).getColorBufferTexture().bind(0);
+    kawaseShader.begin();
+    kawaseShader.setUniformi("u_texture", 0);
+    fullscreenQuad.render(kawaseShader);
+    kawaseShader.end();*/
+
+  }
+
+  private void blitUsingKawase(FrameBuffer from, FrameBuffer to) {
+    float texel = 1f / to.getWidth();
+    to.begin();
+    from.getColorBufferTexture().bind(0);
+    kawaseShader.begin();
+    clearContext();
+    kawaseShader.setUniformi("u_texture", 0);
+    kawaseShader.setUniformf("scale", texel);
+    fullscreenQuad.render(kawaseShader);
+    kawaseShader.end();
+    to.end();
   }
 
   private void fillUsing(FrameBuffer frameBuffer, Texture texture) {
-    frameBuffer.begin();
     clearContext();
+    frameBuffer.begin();
     buffer.paint(texture);
     frameBuffer.end();
   }
