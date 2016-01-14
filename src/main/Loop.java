@@ -90,7 +90,7 @@ public class Loop {
     composeBlurs.begin();
     for (int i = 0; i < gbuffer.blurDownsamples.size(); i++) {
       gbuffer.blurDownsamples.get(i).getColorBufferTexture().bind(i);
-      composeBlurs.setUniformi("u_texture" + i, i);
+      composeBlurs.setUniformi("u_texture[" + i + "]", i);
     }
     fullscreenQuad.render(composeBlurs);
     composeBlurs.end();
