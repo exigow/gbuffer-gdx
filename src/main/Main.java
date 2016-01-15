@@ -10,7 +10,7 @@ public class Main {
   public static void main(String[] args) {
     new LwjglApplication(new Wrapper(), new LwjglApplicationConfiguration() {{
       width = 1280;
-      height = 800;
+      height = 960;
       vSyncEnabled = false;
       foregroundFPS = 60;
       backgroundFPS = 60;

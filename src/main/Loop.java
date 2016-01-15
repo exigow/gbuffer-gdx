@@ -47,6 +47,7 @@ public class Loop {
 
     buffer.updateProjection(camera.combined);
     renderQuad(Gdx.input.getX(), Gdx.input.getY());
+    renderQuad(-256, 384);
     fillUsing(gbuffer.color, gBufferTexture.color);
     fillUsing(gbuffer.emissive, gBufferTexture.emissive);
     buffer.reset();
@@ -101,15 +102,11 @@ public class Loop {
   }
 
   private void renderQuad(float x, float y) {
-    float scale = 256;
-    buffer.putVertex(x - scale + fun(1), y - scale + fun(2), 0, 0);
-    buffer.putVertex(x + scale + fun(3), y - scale + fun(4), 1, 0);
-    buffer.putVertex(x + scale + fun(5), y + scale + fun(6), 1, 1);
-    buffer.putVertex(x - scale + fun(7), y + scale + fun(8), 0, 1);
-  }
-
-  private float fun(float mul) {
-    return sin(elapsedTime + mul) * 16;
+    float scale = 768;
+    buffer.putVertex(x - scale, y - scale, 0, 0);
+    buffer.putVertex(x + scale, y - scale, 1, 0);
+    buffer.putVertex(x + scale, y + scale, 1, 1);
+    buffer.putVertex(x - scale, y + scale, 0, 1);
   }
 
 }
