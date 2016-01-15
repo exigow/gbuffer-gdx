@@ -13,11 +13,13 @@ public class GBuffer {
   public final FrameBuffer color;
   public final FrameBuffer emissive;
   public final List<FrameBuffer> blurDownsamples;
+  public final FrameBuffer blurDownsamplesComposition;
 
   private GBuffer(int width, int height) {
     color = createBuffer(width, height);
     emissive = createBuffer(width, height);
     blurDownsamples = createEmissiveDownsamples();
+    blurDownsamplesComposition = createBuffer(512, 512);
   }
 
   public static GBuffer withSize(int width, int heigth) {

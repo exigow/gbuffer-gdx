@@ -14,6 +14,7 @@ public class Main {
       vSyncEnabled = false;
       foregroundFPS = 60;
       backgroundFPS = 60;
+      resizable = false;
     }});
    }
 
