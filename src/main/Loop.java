@@ -112,7 +112,7 @@ public class Loop {
   }
 
   private void renderQuad(float x, float y) {
-    float scale = 768;
+    float scale = 256;
     buffer.putVertex(x - scale, y - scale, 0, 0);
     buffer.putVertex(x + scale, y - scale, 1, 0);
     buffer.putVertex(x + scale, y + scale, 1, 1);
