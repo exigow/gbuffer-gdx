@@ -27,7 +27,9 @@ public class Loop {
   private final ShaderProgram kawaseShader = ResourceLoader.loadShader("data/screenspace.vert", "data/kawase.frag");
   private final ShaderProgram composeBlursShader = ResourceLoader.loadShader("data/screenspace.vert", "data/composeBlurs.frag");
   private final ShaderProgram composeShader = ResourceLoader.loadShader("data/screenspace.vert", "data/compose.frag");
+  private final ShaderProgram flareShader = ResourceLoader.loadShader("data/screenspace.vert", "data/flare.frag");
   private final GBufferTexture gBufferTexture = loadTestGBufferTexture();
+  private final ShapeRenderer shapeRenderer = new ShapeRenderer();
 
   private static OrthographicCamera createCamera() {
     OrthographicCamera cam = new OrthographicCamera();
@@ -45,17 +47,27 @@ public class Loop {
   public void onUpdate(float delta) {
     elapsedTime += delta;
 
-    buffer.updateProjection(camera.combined);
+    gbuffer.emissive.begin();
+    clearContext();
+    shapeRenderer.setProjectionMatrix(camera.combined);
+    shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+    shapeRenderer.setColor(1, 1, 1, 1);
+    shapeRenderer.circle(Gdx.input.getX(), Gdx.input.getY(), 32);
+    shapeRenderer.setColor(0, 0, 0, 1);
+    shapeRenderer.rect(256, 256, 256, 256);
+    shapeRenderer.end();
+    gbuffer.emissive.end();
+
+    /*buffer.updateProjection(camera.combined);
     renderQuad(Gdx.input.getX(), Gdx.input.getY());
     renderQuad(-256, 384);
     fillUsing(gbuffer.color, gBufferTexture.color);
     fillUsing(gbuffer.emissive, gBufferTexture.emissive);
-    buffer.reset();
+    buffer.reset();*/
 
     blitUsingKawase(gbuffer.emissive, gbuffer.blurDownsamples.get(0));
-    blitUsingKawase(gbuffer.blurDownsamples.get(0), gbuffer.blurDownsamples.get(1));
-    blitUsingKawase(gbuffer.blurDownsamples.get(1), gbuffer.blurDownsamples.get(2));
-    blitUsingKawase(gbuffer.blurDownsamples.get(2), gbuffer.blurDownsamples.get(3));
+    for (int i = 1; i < 3; i++)
+      blitUsingKawase(gbuffer.blurDownsamples.get(i - 1), gbuffer.blurDownsamples.get(i));
 
     gbuffer.blurDownsamplesComposition.begin();
     composeBlursShader.begin();
@@ -67,13 +79,11 @@ public class Loop {
     composeBlursShader.end();
     gbuffer.blurDownsamplesComposition.end();
 
-    gbuffer.color.getColorBufferTexture().bind(0);
-    gbuffer.blurDownsamplesComposition.getColorBufferTexture().bind(1);
-    composeShader.begin();
-    composeShader.setUniformi("u_texture_color", 0);
-    composeShader.setUniformi("u_texture_emissive", 1);
-    fullscreenQuad.render(composeShader);
-    composeShader.end();
+    gbuffer.blurDownsamplesComposition.getColorBufferTexture().bind(0);
+    flareShader.begin();
+    flareShader.setUniformi("u_texture", 0);
+    fullscreenQuad.render(flareShader);
+    flareShader.end();
   }
 
   private void blitUsingKawase(FrameBuffer from, FrameBuffer to) {
