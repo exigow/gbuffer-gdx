@@ -2,7 +2,7 @@ uniform sampler2D u_texture;
 varying vec2 v_texCoords;
 uniform float texel;
 
-float weight[5] = {
+const float weight[5] = {
 	0.2270270270,
 	0.1945945946,
 	0.1216216216,
@@ -10,7 +10,7 @@ float weight[5] = {
 	0.0162162162
 };
 
-vec3 lookup(int x, int y, float weigth) {
+vec3 lookup(float x, float y, float weigth) {
 	return texture2D(u_texture, v_texCoords + vec2(texel * x, texel * y) * 2).xyz * weigth;
 }
 

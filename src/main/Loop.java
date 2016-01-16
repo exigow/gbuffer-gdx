@@ -15,6 +15,8 @@ import main.rendering.GBufferTexture;
 import main.rendering.utils.StaticFullscreenQuad;
 import main.utils.ResourceLoader;
 
+import static com.badlogic.gdx.math.MathUtils.sin;
+
 public class Loop {
 
   private final static int WIDTH = Gdx.graphics.getWidth();
@@ -55,9 +57,9 @@ public class Loop {
     shapeRenderer.setProjectionMatrix(camera.combined);
     shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
     drawCircle(Gdx.input.getX(), Gdx.input.getY(), 1, 1, 1, 24);
-    drawCircle(Gdx.input.getX() + MathUtils.sin(elapsedTime * 1.02f) * 256, Gdx.input.getY() + MathUtils.sin(elapsedTime * 1.42f) * 256, 1, .25f, .25f, 8);
-    drawCircle(Gdx.input.getX() + MathUtils.sin(elapsedTime * 2.41f) * 256, Gdx.input.getY() + MathUtils.sin(elapsedTime * 3.17f) * 256, .25f, 1, .25f, 12);
-    drawCircle(Gdx.input.getX() + MathUtils.sin(elapsedTime * 3.31f) * 256, Gdx.input.getY() + MathUtils.sin(elapsedTime * .97f) * 256, .25f, .25f, 1, 16);
+    drawCircle(Gdx.input.getX() + sin(elapsedTime * 1.02f) * 256, Gdx.input.getY() + sin(elapsedTime * 1.42f) * 256, 1, .25f, .25f, 8);
+    drawCircle(Gdx.input.getX() + sin(elapsedTime * 2.41f) * 256, Gdx.input.getY() + sin(elapsedTime * 3.17f) * 256, .25f, 1, .25f, 12);
+    drawCircle(Gdx.input.getX() + sin(elapsedTime * 3.31f) * 256, Gdx.input.getY() + sin(elapsedTime * .97f) * 256, .25f, .25f, 1, 16);
     shapeRenderer.end();
     gbuffer.emissive.end();
 

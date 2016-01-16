@@ -47,7 +47,7 @@ public class Blurer {
   }
 
   private void blitUsingKawase(FrameBuffer from, FrameBuffer to) {
-    float texel = 1f / to.getWidth();
+    float texel = 1f / to.getHeight();
     to.begin();
     clearContext();
     from.getColorBufferTexture().bind(0);
