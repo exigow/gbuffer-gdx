@@ -1,7 +1,6 @@
 package main;
 
 import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
@@ -29,8 +28,7 @@ public class Main {
 
     @Override
     public void render() {
-      float delta = Gdx.graphics.getDeltaTime();
-      loop.onUpdate(delta);
+      loop.onUpdate();
     }
 
   }
