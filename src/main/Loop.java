@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import main.rendering.Blurer;
 import main.rendering.Buffer;
 import main.rendering.GBuffer;
@@ -26,6 +27,7 @@ public class Loop {
   private final GBufferTexture gBufferTexture = loadTestGBufferTexture();
   private final ShapeRenderer shapeRenderer = new ShapeRenderer();
   private final Blurer blurer = new Blurer();
+  private float elapsedTime;
 
   private static OrthographicCamera createCamera() {
     OrthographicCamera cam = new OrthographicCamera();
@@ -40,15 +42,16 @@ public class Loop {
     return texture;
   }
 
-  public void onUpdate() {
+  public void onUpdate(float delta) {
+    elapsedTime += delta;
     gbuffer.emissive.begin();
     clearContext();
     shapeRenderer.setProjectionMatrix(camera.combined);
     shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-    shapeRenderer.setColor(1, 1, 1, 1);
-    shapeRenderer.circle(Gdx.input.getX(), Gdx.input.getY(), 32);
-    shapeRenderer.setColor(0, 0, 0, 1);
-    shapeRenderer.rect(256, 256, 256, 256);
+    drawCircle(Gdx.input.getX(), Gdx.input.getY(), 1, 1, 1, 24);
+    drawCircle(Gdx.input.getX() + MathUtils.sin(elapsedTime * 1.02f) * 256, Gdx.input.getY() + MathUtils.sin(elapsedTime * 1.42f) * 256, 1, .25f, .25f, 8);
+    drawCircle(Gdx.input.getX() + MathUtils.sin(elapsedTime * 2.41f) * 256, Gdx.input.getY() + MathUtils.sin(elapsedTime * 3.17f) * 256, .25f, 1, .25f, 12);
+    drawCircle(Gdx.input.getX() + MathUtils.sin(elapsedTime * 3.31f) * 256, Gdx.input.getY() + MathUtils.sin(elapsedTime * .97f) * 256, .25f, .25f, 1, 16);
     shapeRenderer.end();
     gbuffer.emissive.end();
 
@@ -66,6 +69,11 @@ public class Loop {
     flareShader.setUniformi("u_texture", 0);
     StaticFullscreenQuad.renderUsing(flareShader);
     flareShader.end();
+  }
+
+  private void drawCircle(float x, float y, float r, float g, float b, float radius) {
+    shapeRenderer.setColor(r, g, b, 1);
+    shapeRenderer.circle(x, y, radius);
   }
 
   private void fillUsing(FrameBuffer frameBuffer, Texture texture) {
