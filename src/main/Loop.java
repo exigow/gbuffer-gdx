@@ -51,8 +51,7 @@ public class Loop {
     fillUsing(gbuffer.emissive, gBufferTexture.emissive);
     buffer.reset();
 
-    /*gbuffer.emissive.begin();
-    clearContext();
+    gbuffer.emissive.begin();
     shapeRenderer.setProjectionMatrix(camera.combined);
     shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
     drawCircle(Gdx.input.getX(), Gdx.input.getY(), 1, 1, 1, 24);
@@ -60,7 +59,7 @@ public class Loop {
     drawCircle(Gdx.input.getX() + MathUtils.sin(elapsedTime * 2.41f) * 256, Gdx.input.getY() + MathUtils.sin(elapsedTime * 3.17f) * 256, .25f, 1, .25f, 12);
     drawCircle(Gdx.input.getX() + MathUtils.sin(elapsedTime * 3.31f) * 256, Gdx.input.getY() + MathUtils.sin(elapsedTime * .97f) * 256, .25f, .25f, 1, 16);
     shapeRenderer.end();
-    gbuffer.emissive.end();*/
+    gbuffer.emissive.end();
 
     blurer.blur(gbuffer.emissive);
 
