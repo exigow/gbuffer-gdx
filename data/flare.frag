@@ -25,12 +25,21 @@ float scales[3] = {
 
 void main() {
     vec2 dir = .5 - v_texCoords.xy;
-    vec3 result = texture2D(u_texture, v_texCoords.xy).xyz;
+    // bounces flare
+    vec3 bouncesFlareColor = texture2D(u_texture, v_texCoords.xy).xyz;
     for (int f = 0; f < 3; f++) {
         for (int i = 0; i < 8; i++) {
             vec2 uv = v_texCoords.xy + dir * scales[f] * distances[i];
-            result += texture2D(u_texture, uv).xyz * factors[f] * .075f;
+            bouncesFlareColor += texture2D(u_texture, uv).xyz * factors[f] * .075f;
         }
     }
-    gl_FragColor = vec4(result, 0);
+    // circular flare
+    vec2 normDir = normalize(dir) * 0.4f;
+    vec3 curcilarFlareColor = vec3(0);
+    for (int f = 0; f < 3; f++) {
+        curcilarFlareColor += texture2D(u_texture, v_texCoords.xy + normDir * scales[f]).xyz * factors[f];
+    }
+    curcilarFlareColor *= .125;
+    // mix
+    gl_FragColor = vec4(bouncesFlareColor + curcilarFlareColor, 0);
 }

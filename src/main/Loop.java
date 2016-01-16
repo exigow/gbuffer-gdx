@@ -79,7 +79,7 @@ public class Loop {
     composeBlursShader.end();
     gbuffer.blurDownsamplesComposition.end();
 
-    gbuffer.blurDownsamplesComposition.getColorBufferTexture().bind(0);
+    gbuffer.blurDownsamples.get(2).getColorBufferTexture().bind(0);
     flareShader.begin();
     flareShader.setUniformi("u_texture", 0);
     fullscreenQuad.render(flareShader);

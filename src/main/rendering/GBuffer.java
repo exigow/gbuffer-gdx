@@ -27,7 +27,7 @@ public class GBuffer {
   }
 
   private List<FrameBuffer> createEmissiveDownsamples() {
-    return Arrays.asList(512, 256, 128, 64).stream()
+    return Arrays.asList(512, 256, 128).stream()
       .map(size -> createBuffer(size, size))
       .collect(Collectors.toList());
   }
