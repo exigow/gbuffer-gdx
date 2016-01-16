@@ -44,7 +44,14 @@ public class Loop {
 
   public void onUpdate(float delta) {
     elapsedTime += delta;
-    gbuffer.emissive.begin();
+
+    buffer.updateProjection(camera.combined);
+    renderQuad(Gdx.input.getX(), Gdx.input.getY());
+    fillUsing(gbuffer.color, gBufferTexture.color);
+    fillUsing(gbuffer.emissive, gBufferTexture.emissive);
+    buffer.reset();
+
+    /*gbuffer.emissive.begin();
     clearContext();
     shapeRenderer.setProjectionMatrix(camera.combined);
     shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
@@ -53,22 +60,17 @@ public class Loop {
     drawCircle(Gdx.input.getX() + MathUtils.sin(elapsedTime * 2.41f) * 256, Gdx.input.getY() + MathUtils.sin(elapsedTime * 3.17f) * 256, .25f, 1, .25f, 12);
     drawCircle(Gdx.input.getX() + MathUtils.sin(elapsedTime * 3.31f) * 256, Gdx.input.getY() + MathUtils.sin(elapsedTime * .97f) * 256, .25f, .25f, 1, 16);
     shapeRenderer.end();
-    gbuffer.emissive.end();
-
-    /*buffer.updateProjection(camera.combined);
-    renderQuad(Gdx.input.getX(), Gdx.input.getY());
-    renderQuad(-256, 384);
-    fillUsing(gbuffer.color, gBufferTexture.color);
-    fillUsing(gbuffer.emissive, gBufferTexture.emissive);
-    buffer.reset();*/
+    gbuffer.emissive.end();*/
 
     blurer.blur(gbuffer.emissive);
 
-    blurer.blurDownsamplesComposition.getColorBufferTexture().bind(0);
-    flareShader.begin();
-    flareShader.setUniformi("u_texture", 0);
-    StaticFullscreenQuad.renderUsing(flareShader);
-    flareShader.end();
+    gbuffer.color.getColorBufferTexture().bind(0);
+    blurer.blurDownsamplesComposition.getColorBufferTexture().bind(1);
+    composeShader.begin();
+    composeShader.setUniformi("u_texture0", 0);
+    composeShader.setUniformi("u_texture1", 1);
+    StaticFullscreenQuad.renderUsing(composeShader);
+    composeShader.end();
   }
 
   private void drawCircle(float x, float y, float r, float g, float b, float radius) {

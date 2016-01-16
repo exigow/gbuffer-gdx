@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class Blurer {
 
-  private final ShaderProgram kawaseShader = ResourceLoader.loadShader("data/screenspace.vert", "data/kawase.frag");
+  private final ShaderProgram kawaseShader = ResourceLoader.loadShader("data/screenspace.vert", "data/blur_9lookups.frag");
   private final ShaderProgram composeBlursShader = ResourceLoader.loadShader("data/screenspace.vert", "data/composeBlurs.frag");
   private final List<FrameBuffer> blurDownsamples;
   public final FrameBuffer blurDownsamplesComposition;
@@ -53,7 +53,7 @@ public class Blurer {
     from.getColorBufferTexture().bind(0);
     kawaseShader.begin();
     kawaseShader.setUniformi("u_texture", 0);
-    kawaseShader.setUniformf("scale", texel);
+    kawaseShader.setUniformf("texel", texel);
     StaticFullscreenQuad.renderUsing(kawaseShader);
     kawaseShader.end();
     to.end();
