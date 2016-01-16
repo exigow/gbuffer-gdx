@@ -11,10 +11,8 @@ import main.rendering.Blurer;
 import main.rendering.Buffer;
 import main.rendering.GBuffer;
 import main.rendering.GBufferTexture;
-import main.utils.FullscreenQuad;
+import main.rendering.utils.StaticFullscreenQuad;
 import main.utils.ResourceLoader;
-
-import static com.badlogic.gdx.math.MathUtils.sin;
 
 public class Loop {
 
@@ -23,9 +21,6 @@ public class Loop {
   private final GBuffer gbuffer = GBuffer.withSize(WIDTH, HEIGHT);
   private final OrthographicCamera camera = createCamera();
   private final Buffer buffer = new Buffer();
-  private final FullscreenQuad fullscreenQuad = new FullscreenQuad();
-  private final ShaderProgram kawaseShader = ResourceLoader.loadShader("data/screenspace.vert", "data/kawase.frag");
-  private final ShaderProgram composeBlursShader = ResourceLoader.loadShader("data/screenspace.vert", "data/composeBlurs.frag");
   private final ShaderProgram composeShader = ResourceLoader.loadShader("data/screenspace.vert", "data/compose.frag");
   private final ShaderProgram flareShader = ResourceLoader.loadShader("data/screenspace.vert", "data/flare.frag");
   private final GBufferTexture gBufferTexture = loadTestGBufferTexture();
@@ -64,38 +59,13 @@ public class Loop {
     fillUsing(gbuffer.emissive, gBufferTexture.emissive);
     buffer.reset();*/
 
-    blitUsingKawase(gbuffer.emissive, blurer.blurDownsamples.get(0));
-    for (int i = 1; i < 3; i++)
-      blitUsingKawase(blurer.blurDownsamples.get(i - 1), blurer.blurDownsamples.get(i));
+    blurer.blur(gbuffer.emissive);
 
-    blurer.blurDownsamplesComposition.begin();
-    composeBlursShader.begin();
-    for (int i = 0; i < blurer.blurDownsamples.size(); i++) {
-      blurer.blurDownsamples.get(i).getColorBufferTexture().bind(i);
-      composeBlursShader.setUniformi("u_texture[" + i + "]", i);
-    }
-    fullscreenQuad.render(composeBlursShader);
-    composeBlursShader.end();
-    blurer.blurDownsamplesComposition.end();
-
-    blurer.blurDownsamples.get(2).getColorBufferTexture().bind(0);
+    blurer.blurDownsamplesComposition.getColorBufferTexture().bind(0);
     flareShader.begin();
     flareShader.setUniformi("u_texture", 0);
-    fullscreenQuad.render(flareShader);
+    StaticFullscreenQuad.renderUsing(flareShader);
     flareShader.end();
-  }
-
-  private void blitUsingKawase(FrameBuffer from, FrameBuffer to) {
-    float texel = 1f / to.getWidth();
-    to.begin();
-    clearContext();
-    from.getColorBufferTexture().bind(0);
-    kawaseShader.begin();
-    kawaseShader.setUniformi("u_texture", 0);
-    kawaseShader.setUniformf("scale", texel);
-    fullscreenQuad.render(kawaseShader);
-    kawaseShader.end();
-    to.end();
   }
 
   private void fillUsing(FrameBuffer frameBuffer, Texture texture) {

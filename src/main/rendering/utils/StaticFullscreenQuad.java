@@ -1,4 +1,4 @@
-package main.utils;
+package main.rendering.utils;
 
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
@@ -6,12 +6,12 @@ import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
-public class FullscreenQuad {
+public class StaticFullscreenQuad {
 
-  private final Mesh quad = createQuad();
+  private final static Mesh QUAD = createQuad();
 
-  public void render(ShaderProgram program) {
-    quad.render(program, GL20.GL_TRIANGLE_FAN, 0, 4);
+  public static void renderUsing(ShaderProgram program) {
+    QUAD.render(program, GL20.GL_TRIANGLE_FAN, 0, 4);
   }
 
   private static Mesh createQuad() {
