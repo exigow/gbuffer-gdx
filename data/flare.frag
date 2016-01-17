@@ -18,7 +18,7 @@ vec3 factors[3] = {
     vec3(0, 0, 1),
 };
 
-float z = .0125;
+float z = .025;
 float scales[3] = {
     1 + z, 1, 1 - z
 };

@@ -18,10 +18,12 @@ public class Blurer {
   private final ShaderProgram composeBlursShader = ResourceLoader.loadShader("data/screenspace.vert", "data/composeBlurs.frag");
   private final List<FrameBuffer> blurDownsamples;
   public final FrameBuffer blurDownsamplesComposition;
+  private final FrameBuffer blurTempVerticalDownsamplesComposition;
 
   public Blurer() {
     blurDownsamples = createDownsamples();
-    blurDownsamplesComposition = FrameBufferCreator.createDefault(512, 512);
+    blurDownsamplesComposition = FrameBufferCreator.createDefault(256, 256);
+    blurTempVerticalDownsamplesComposition = FrameBufferCreator.createDefault(256, 256);
   }
 
   private List<FrameBuffer> createDownsamples() {
@@ -31,11 +33,15 @@ public class Blurer {
   }
 
   public void blur(FrameBuffer source) {
-    blitUsingKawase(source, blurDownsamples.get(0));
-    for (int i = 1; i < 3; i++)
-      blitUsingKawase(blurDownsamples.get(i - 1), blurDownsamples.get(i));
+    blur(source, blurTempVerticalDownsamplesComposition, 1, 0);
+    blur(blurTempVerticalDownsamplesComposition, blurDownsamplesComposition, 0, 1);
+  }
 
-    blurDownsamplesComposition.begin();
+  private void blur(FrameBuffer source, FrameBuffer to, float x, float y) {
+    blitUsingKawase(source, blurDownsamples.get(0), x, y);
+    for (int i = 1; i < 3; i++)
+      blitUsingKawase(blurDownsamples.get(i - 1), blurDownsamples.get(i), x, y);
+    to.begin();
     composeBlursShader.begin();
     for (int i = 0; i < blurDownsamples.size(); i++) {
       blurDownsamples.get(i).getColorBufferTexture().bind(i);
@@ -43,10 +49,10 @@ public class Blurer {
     }
     StaticFullscreenQuad.renderUsing(composeBlursShader);
     composeBlursShader.end();
-    blurDownsamplesComposition.end();
+    to.end();
   }
 
-  private void blitUsingKawase(FrameBuffer from, FrameBuffer to) {
+  private void blitUsingKawase(FrameBuffer from, FrameBuffer to, float x, float y) {
     float texel = 1f / to.getHeight();
     to.begin();
     clearContext();
@@ -54,6 +60,8 @@ public class Blurer {
     kawaseShader.begin();
     kawaseShader.setUniformi("u_texture", 0);
     kawaseShader.setUniformf("texel", texel);
+    kawaseShader.setUniformf("vecX", x);
+    kawaseShader.setUniformf("vecY", y);
     StaticFullscreenQuad.renderUsing(kawaseShader);
     kawaseShader.end();
     to.end();

@@ -6,5 +6,6 @@ void main() {
     color += texture2D(u_texture[0], v_texCoords).xyz;
     color += texture2D(u_texture[1], v_texCoords).xyz;
     color += texture2D(u_texture[2], v_texCoords).xyz;
+    color *= .5;
 	gl_FragColor = vec4(color, 1);
 }

@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.MathUtils;
 import main.rendering.Blurer;
 import main.rendering.Buffer;
 import main.rendering.GBuffer;
@@ -15,8 +14,6 @@ import main.rendering.GBufferTexture;
 import main.rendering.utils.FrameBufferCreator;
 import main.rendering.utils.StaticFullscreenQuad;
 import main.utils.ResourceLoader;
-
-import static com.badlogic.gdx.math.MathUtils.sin;
 
 public class Loop {
 
@@ -28,11 +25,12 @@ public class Loop {
   private final ShaderProgram composeForBloomShader = ResourceLoader.loadShader("data/screenspace.vert", "data/composeForBloom.frag");
   private final ShaderProgram flareShader = ResourceLoader.loadShader("data/screenspace.vert", "data/flare.frag");
   private final ShaderProgram showShader = ResourceLoader.loadShader("data/screenspace.vert", "data/buffer.frag");
+  private final ShaderProgram composeShader = ResourceLoader.loadShader("data/screenspace.vert", "data/compose.frag");
   private final GBufferTexture gBufferTexture = loadTestGBufferTexture();
   private final ShapeRenderer shapeRenderer = new ShapeRenderer();
   private final Blurer blurer = new Blurer();
   private float elapsedTime;
-  private final FrameBuffer preBloomBuffer = FrameBufferCreator.createDefault(512, 512);
+  private final FrameBuffer tempBuffer = FrameBufferCreator.createDefault(512, 512);
 
   private static OrthographicCamera createCamera() {
     OrthographicCamera cam = new OrthographicCamera();
@@ -56,9 +54,16 @@ public class Loop {
     fillUsing(gbuffer.emissive, gBufferTexture.emissive);
     buffer.reset();
 
+    /*gbuffer.emissive.begin();
+    shapeRenderer.setProjectionMatrix(camera.combined);
+    shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+    shapeRenderer.circle(Gdx.input.getX(), Gdx.input.getY(), 32);
+    shapeRenderer.end();
+    gbuffer.emissive.end();*/
+
     blurer.blur(gbuffer.emissive);
 
-    preBloomBuffer.begin();
+    tempBuffer.begin();
     gbuffer.color.getColorBufferTexture().bind(0);
     blurer.blurDownsamplesComposition.getColorBufferTexture().bind(1);
     composeForBloomShader.begin();
@@ -66,13 +71,25 @@ public class Loop {
     composeForBloomShader.setUniformi("u_texture_emissive", 1);
     StaticFullscreenQuad.renderUsing(composeForBloomShader);
     composeForBloomShader.end();
-    preBloomBuffer.end();
+    tempBuffer.end();
 
-    preBloomBuffer.getColorBufferTexture().bind(0);
-    showShader.begin();
-    showShader.setUniformi("u_texture", 0);
-    StaticFullscreenQuad.renderUsing(showShader);
-    showShader.end();
+    blurer.blur(tempBuffer);
+
+    tempBuffer.begin();
+    blurer.blurDownsamplesComposition.getColorBufferTexture().bind(0);
+    flareShader.begin();
+    flareShader.setUniformi("u_texture", 0);
+    StaticFullscreenQuad.renderUsing(flareShader);
+    flareShader.end();
+    tempBuffer.end();
+
+    gbuffer.color.getColorBufferTexture().bind(0);
+    tempBuffer.getColorBufferTexture().bind(1);
+    composeShader.begin();
+    composeShader.setUniformi("u_texture_color", 0);
+    composeShader.setUniformi("u_texture_bloom", 1);
+    StaticFullscreenQuad.renderUsing(composeShader);
+    composeShader.end();
   }
 
   private void fillUsing(FrameBuffer frameBuffer, Texture texture) {
