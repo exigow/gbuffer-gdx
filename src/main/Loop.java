@@ -69,10 +69,10 @@ public class Loop {
     preBloomBuffer.end();
 
     preBloomBuffer.getColorBufferTexture().bind(0);
-    flareShader.begin();
-    flareShader.setUniformi("u_texture", 0);
-    StaticFullscreenQuad.renderUsing(flareShader);
-    flareShader.end();
+    showShader.begin();
+    showShader.setUniformi("u_texture", 0);
+    StaticFullscreenQuad.renderUsing(showShader);
+    showShader.end();
   }
 
   private void fillUsing(FrameBuffer frameBuffer, Texture texture) {
