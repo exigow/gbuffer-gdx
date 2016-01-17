@@ -83,13 +83,19 @@ public class Loop {
     flareShader.end();
     tempBuffer.end();
 
-    gbuffer.color.getColorBufferTexture().bind(0);
+    /*gbuffer.color.getColorBufferTexture().bind(0);
     tempBuffer.getColorBufferTexture().bind(1);
     composeShader.begin();
     composeShader.setUniformi("u_texture_color", 0);
     composeShader.setUniformi("u_texture_bloom", 1);
     StaticFullscreenQuad.renderUsing(composeShader);
-    composeShader.end();
+    composeShader.end();*/
+
+    tempBuffer.getColorBufferTexture().bind(0);
+    showShader.begin();
+    showShader.setUniformi("u_texture", 0);
+    StaticFullscreenQuad.renderUsing(showShader);
+    showShader.end();
   }
 
   private void fillUsing(FrameBuffer frameBuffer, Texture texture) {
