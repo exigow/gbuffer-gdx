@@ -18,7 +18,7 @@ vec3 factors[3] = {
     vec3(0, 0, 1),
 };
 
-float z = .025;
+float z = .0125;
 float scales[3] = {
     1 + z, 1, 1 - z
 };
@@ -39,7 +39,7 @@ void main() {
     for (int f = 0; f < 3; f++) {
         curcilarFlareColor += texture2D(u_texture, v_texCoords.xy + normDir * scales[f]).xyz * factors[f];
     }
-    curcilarFlareColor *= .125;
+    curcilarFlareColor *= .5 * pow(length(dir), 2);
     // mix
-    gl_FragColor = vec4(bouncesFlareColor + curcilarFlareColor, 0);
+    gl_FragColor = vec4(bouncesFlareColor + curcilarFlareColor, 1);
 }

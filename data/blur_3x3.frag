@@ -11,7 +11,7 @@ const float weight[5] = {
 };
 
 vec3 lookup(float x, float y, float weigth) {
-	return texture2D(u_texture, v_texCoords + vec2(texel * x, texel * y) * 2).xyz * weigth;
+	return texture2D(u_texture, v_texCoords + vec2(texel * x, texel * y) * 1.33).xyz * weigth;
 }
 
 void main() {

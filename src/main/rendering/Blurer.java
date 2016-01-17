@@ -25,7 +25,7 @@ public class Blurer {
   }
 
   private List<FrameBuffer> createDownsamples() {
-    return Arrays.asList(512, 256, 128).stream()
+    return Arrays.asList(256, 128, 64).stream()
       .map(size -> FrameBufferCreator.createDefault(size, size))
       .collect(Collectors.toList());
   }

@@ -12,6 +12,7 @@ import main.rendering.Blurer;
 import main.rendering.Buffer;
 import main.rendering.GBuffer;
 import main.rendering.GBufferTexture;
+import main.rendering.utils.FrameBufferCreator;
 import main.rendering.utils.StaticFullscreenQuad;
 import main.utils.ResourceLoader;
 
@@ -24,12 +25,14 @@ public class Loop {
   private final GBuffer gbuffer = GBuffer.withSize(WIDTH, HEIGHT);
   private final OrthographicCamera camera = createCamera();
   private final Buffer buffer = new Buffer();
-  private final ShaderProgram composeShader = ResourceLoader.loadShader("data/screenspace.vert", "data/compose.frag");
+  private final ShaderProgram composeForBloomShader = ResourceLoader.loadShader("data/screenspace.vert", "data/composeForBloom.frag");
   private final ShaderProgram flareShader = ResourceLoader.loadShader("data/screenspace.vert", "data/flare.frag");
+  private final ShaderProgram showShader = ResourceLoader.loadShader("data/screenspace.vert", "data/buffer.frag");
   private final GBufferTexture gBufferTexture = loadTestGBufferTexture();
   private final ShapeRenderer shapeRenderer = new ShapeRenderer();
   private final Blurer blurer = new Blurer();
   private float elapsedTime;
+  private final FrameBuffer preBloomBuffer = FrameBufferCreator.createDefault(512, 512);
 
   private static OrthographicCamera createCamera() {
     OrthographicCamera cam = new OrthographicCamera();
@@ -53,30 +56,23 @@ public class Loop {
     fillUsing(gbuffer.emissive, gBufferTexture.emissive);
     buffer.reset();
 
-    gbuffer.emissive.begin();
-    shapeRenderer.setProjectionMatrix(camera.combined);
-    shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-    drawCircle(Gdx.input.getX(), Gdx.input.getY(), 1, 1, 1, 24);
-    drawCircle(Gdx.input.getX() + sin(elapsedTime * 1.02f) * 256, Gdx.input.getY() + sin(elapsedTime * 1.42f) * 256, 1, .25f, .25f, 8);
-    drawCircle(Gdx.input.getX() + sin(elapsedTime * 2.41f) * 256, Gdx.input.getY() + sin(elapsedTime * 3.17f) * 256, .25f, 1, .25f, 12);
-    drawCircle(Gdx.input.getX() + sin(elapsedTime * 3.31f) * 256, Gdx.input.getY() + sin(elapsedTime * .97f) * 256, .25f, .25f, 1, 16);
-    shapeRenderer.end();
-    gbuffer.emissive.end();
-
     blurer.blur(gbuffer.emissive);
 
+    preBloomBuffer.begin();
     gbuffer.color.getColorBufferTexture().bind(0);
     blurer.blurDownsamplesComposition.getColorBufferTexture().bind(1);
-    composeShader.begin();
-    composeShader.setUniformi("u_texture0", 0);
-    composeShader.setUniformi("u_texture1", 1);
-    StaticFullscreenQuad.renderUsing(composeShader);
-    composeShader.end();
-  }
+    composeForBloomShader.begin();
+    composeForBloomShader.setUniformi("u_texture_color", 0);
+    composeForBloomShader.setUniformi("u_texture_emissive", 1);
+    StaticFullscreenQuad.renderUsing(composeForBloomShader);
+    composeForBloomShader.end();
+    preBloomBuffer.end();
 
-  private void drawCircle(float x, float y, float r, float g, float b, float radius) {
-    shapeRenderer.setColor(r, g, b, 1);
-    shapeRenderer.circle(x, y, radius);
+    preBloomBuffer.getColorBufferTexture().bind(0);
+    flareShader.begin();
+    flareShader.setUniformi("u_texture", 0);
+    StaticFullscreenQuad.renderUsing(flareShader);
+    flareShader.end();
   }
 
   private void fillUsing(FrameBuffer frameBuffer, Texture texture) {
