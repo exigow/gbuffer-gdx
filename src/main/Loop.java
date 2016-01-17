@@ -7,12 +7,14 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import main.debug.Benchmark;
 import main.rendering.Blurer;
 import main.rendering.Buffer;
 import main.rendering.GBuffer;
 import main.rendering.GBufferTexture;
 import main.rendering.utils.FrameBufferCreator;
 import main.rendering.utils.StaticFullscreenQuad;
+import main.utils.Logger;
 import main.utils.ResourceLoader;
 
 public class Loop {
@@ -48,21 +50,27 @@ public class Loop {
   public void onUpdate(float delta) {
     elapsedTime += delta;
 
+    Benchmark.start("storing vertex buffer");
     buffer.updateProjection(camera.combined);
-    renderQuad(Gdx.input.getX(), Gdx.input.getY());
+    renderQuad(384, 384);
     fillUsing(gbuffer.color, gBufferTexture.color);
     fillUsing(gbuffer.emissive, gBufferTexture.emissive);
     buffer.reset();
+    Benchmark.end();
 
-    /*gbuffer.emissive.begin();
+    gbuffer.emissive.begin();
     shapeRenderer.setProjectionMatrix(camera.combined);
     shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-    shapeRenderer.circle(Gdx.input.getX(), Gdx.input.getY(), 32);
+    shapeRenderer.setColor(1, .75f, .5f, 1);
+    shapeRenderer.circle(Gdx.input.getX(), Gdx.input.getY(), 16);
     shapeRenderer.end();
-    gbuffer.emissive.end();*/
+    gbuffer.emissive.end();
 
+    Benchmark.start("emissive blur");
     blurer.blur(gbuffer.emissive);
+    Benchmark.end();
 
+    Benchmark.start("mixing bloom buffer");
     tempBuffer.begin();
     gbuffer.color.getColorBufferTexture().bind(0);
     blurer.blurDownsamplesComposition.getColorBufferTexture().bind(1);
@@ -72,9 +80,13 @@ public class Loop {
     StaticFullscreenQuad.renderUsing(composeForBloomShader);
     composeForBloomShader.end();
     tempBuffer.end();
+    Benchmark.end();
 
+    Benchmark.start("bloom blur");
     blurer.blur(tempBuffer);
+    Benchmark.end();
 
+    Benchmark.start("anamorphic flares");
     tempBuffer.begin();
     blurer.blurDownsamplesComposition.getColorBufferTexture().bind(0);
     flareShader.begin();
@@ -82,20 +94,19 @@ public class Loop {
     StaticFullscreenQuad.renderUsing(flareShader);
     flareShader.end();
     tempBuffer.end();
+    Benchmark.end();
 
-    /*gbuffer.color.getColorBufferTexture().bind(0);
+    Benchmark.start("mixing & presentation");
+    gbuffer.color.getColorBufferTexture().bind(0);
     tempBuffer.getColorBufferTexture().bind(1);
     composeShader.begin();
     composeShader.setUniformi("u_texture_color", 0);
     composeShader.setUniformi("u_texture_bloom", 1);
     StaticFullscreenQuad.renderUsing(composeShader);
-    composeShader.end();*/
+    composeShader.end();
+    Benchmark.end();
 
-    tempBuffer.getColorBufferTexture().bind(0);
-    showShader.begin();
-    showShader.setUniformi("u_texture", 0);
-    StaticFullscreenQuad.renderUsing(showShader);
-    showShader.end();
+    Logger.log("" + Benchmark.generateRaportAndReset());
   }
 
   private void fillUsing(FrameBuffer frameBuffer, Texture texture) {

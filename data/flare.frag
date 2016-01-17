@@ -30,7 +30,7 @@ void main() {
     for (int f = 0; f < 3; f++) {
         for (int i = 0; i < 8; i++) {
             vec2 uv = v_texCoords.xy + dir * scales[f] * distances[i];
-            bouncesFlareColor += texture2D(u_texture, uv).xyz * factors[f] * .075f;
+            bouncesFlareColor += texture2D(u_texture, uv).xyz * factors[f] * .125;
         }
     }
     // circular flare

@@ -11,9 +11,9 @@ public class Main {
     new LwjglApplication(new Wrapper(), new LwjglApplicationConfiguration() {{
       width = 1280;
       height = 960;
-      vSyncEnabled = false;
-      foregroundFPS = 60;
-      backgroundFPS = 60;
+      //vSyncEnabled = false;
+      //foregroundFPS = 60;
+      //backgroundFPS = 60;
       resizable = false;
     }});
    }

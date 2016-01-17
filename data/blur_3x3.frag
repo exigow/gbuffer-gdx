@@ -4,13 +4,13 @@ uniform float texel;
 uniform float vecX;
 uniform float vecY;
 
-const float offset[3] = {0.0, 1.3846153846, 3.2307692308};
-const float weight[3] = {0.2270270270, 0.3162162162, 0.0702702703};
+const float offset[3] = {0, 1, 2};
+const float weight[3] = {.2270270270, .3162162162, .0702702703};
 
 vec3 lookup(int i) {
 	int ai = abs(i);
 	float off = offset[ai];
-	return texture2D(u_texture, v_texCoords + vec2(vecX * i * off, vecY * i * off) * texel).xyz * weight[ai];
+	return texture2D(u_texture, v_texCoords + vec2(vecX, vecY) * i * off * texel).xyz * weight[ai];
 }
 
 void main() {
