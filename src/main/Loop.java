@@ -66,7 +66,7 @@ public class Loop {
     shapeRenderer.setProjectionMatrix(camera.combined);
     shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
     shapeRenderer.setColor(1, .75f, .5f, 1);
-    shapeRenderer.circle(Gdx.input.getX(), Gdx.input.getY(), 32);
+    shapeRenderer.circle(Gdx.input.getX(), Gdx.input.getY(), 128);
     shapeRenderer.end();
     gbuffer.emissive.end();
 
@@ -75,7 +75,7 @@ public class Loop {
     shapeRenderer.setProjectionMatrix(camera.combined);
     shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
     shapeRenderer.setColor(1, .75f, .5f, 1);
-    shapeRenderer.circle(Gdx.input.getX(), Gdx.input.getY(), 32);
+    shapeRenderer.circle(Gdx.input.getX(), Gdx.input.getY(), 128);
     shapeRenderer.end();
     gbuffer.color.end();
 
@@ -86,7 +86,7 @@ public class Loop {
     Benchmark.start("mix color with emissive");
     colorPlusEmissiveBuffer.begin();
     gbuffer.color.getColorBufferTexture().bind(0);
-    blurer.blurDownsamplesComposition.getColorBufferTexture().bind(1);
+    blurer.result.getColorBufferTexture().bind(1);
     mixColorWithBlurredEmissive.begin();
     mixColorWithBlurredEmissive.setUniformi("u_texture_color", 0);
     mixColorWithBlurredEmissive.setUniformi("u_texture_emissive", 1);
@@ -111,7 +111,7 @@ public class Loop {
 
     Benchmark.start("anamorphic flares");
     bloomBufferPost.begin();
-    blurer.blurDownsamplesComposition.getColorBufferTexture().bind(0);
+    blurer.result.getColorBufferTexture().bind(0);
     flareShader.begin();
     flareShader.setUniformi("u_texture", 0);
     StaticFullscreenQuad.renderUsing(flareShader);
