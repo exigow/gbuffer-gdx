@@ -53,22 +53,31 @@ public class Loop {
   public void onUpdate(float delta) {
     elapsedTime += delta;
 
-    Benchmark.start("storing vertex buffer");
+    /*Benchmark.start("storing vertex buffer");
     buffer.updateProjection(camera.combined);
     renderQuad(384, 384);
-    //renderQuad(Gdx.input.getX(), Gdx.input.getY());
     fillUsing(gbuffer.color, gBufferTexture.color);
     fillUsing(gbuffer.emissive, gBufferTexture.emissive);
     buffer.reset();
-    Benchmark.end();
+    Benchmark.end();*/
 
     gbuffer.emissive.begin();
+    clearContext();
     shapeRenderer.setProjectionMatrix(camera.combined);
     shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
     shapeRenderer.setColor(1, .75f, .5f, 1);
-    shapeRenderer.circle(Gdx.input.getX(), Gdx.input.getY(), 16);
+    shapeRenderer.circle(Gdx.input.getX(), Gdx.input.getY(), 32);
     shapeRenderer.end();
     gbuffer.emissive.end();
+
+    gbuffer.color.begin();
+    clearContext();
+    shapeRenderer.setProjectionMatrix(camera.combined);
+    shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+    shapeRenderer.setColor(1, .75f, .5f, 1);
+    shapeRenderer.circle(Gdx.input.getX(), Gdx.input.getY(), 32);
+    shapeRenderer.end();
+    gbuffer.color.end();
 
     Benchmark.start("emissive blur");
     blurer.blur(gbuffer.emissive);
