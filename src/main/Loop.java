@@ -53,34 +53,16 @@ public class Loop {
   public void onUpdate(float delta) {
     elapsedTime += delta;
 
-    /*Benchmark.start("storing vertex buffer");
+    Benchmark.start("storing vertex buffer");
     buffer.updateProjection(camera.combined);
-    renderQuad(384, 384);
+    renderQuad(Gdx.input.getX(), Gdx.input.getY());
     fillUsing(gbuffer.color, gBufferTexture.color);
     fillUsing(gbuffer.emissive, gBufferTexture.emissive);
     buffer.reset();
-    Benchmark.end();*/
-
-    gbuffer.emissive.begin();
-    clearContext();
-    shapeRenderer.setProjectionMatrix(camera.combined);
-    shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-    shapeRenderer.setColor(1, .75f, .5f, 1);
-    shapeRenderer.circle(Gdx.input.getX(), Gdx.input.getY(), 128);
-    shapeRenderer.end();
-    gbuffer.emissive.end();
-
-    gbuffer.color.begin();
-    clearContext();
-    shapeRenderer.setProjectionMatrix(camera.combined);
-    shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-    shapeRenderer.setColor(1, .75f, .5f, 1);
-    shapeRenderer.circle(Gdx.input.getX(), Gdx.input.getY(), 128);
-    shapeRenderer.end();
-    gbuffer.color.end();
+    Benchmark.end();
 
     Benchmark.start("emissive blur");
-    blurer.blur(gbuffer.emissive);
+    blurer.blur(gbuffer.emissive, 1);
     Benchmark.end();
 
     Benchmark.start("mix color with emissive");
@@ -106,10 +88,10 @@ public class Loop {
     Benchmark.end();
 
     Benchmark.start("bloom blur");
-    blurer.blur(bloomBufferPre);
+    blurer.blur(bloomBufferPre, 1);
     Benchmark.end();
 
-    Benchmark.start("anamorphic flares");
+/*    Benchmark.start("anamorphic flares");
     bloomBufferPost.begin();
     blurer.result.getColorBufferTexture().bind(0);
     flareShader.begin();
@@ -118,10 +100,10 @@ public class Loop {
     flareShader.end();
     bloomBufferPost.end();
     Benchmark.end();
-
+*/
     Benchmark.start("mix & present");
-    gbuffer.color.getColorBufferTexture().bind(0);
-    bloomBufferPost.getColorBufferTexture().bind(1);
+    colorPlusEmissiveBuffer.getColorBufferTexture().bind(0);
+    blurer.result.getColorBufferTexture().bind(1);
     composeShader.begin();
     composeShader.setUniformi("u_texture_color", 0);
     composeShader.setUniformi("u_texture_bloom", 1);
@@ -130,6 +112,14 @@ public class Loop {
     Benchmark.end();
 
     Logger.log(Gdx.graphics.getFramesPerSecond() + " " + Benchmark.generateRaportAndReset());
+  }
+
+  private void show(FrameBuffer show) {
+    show.getColorBufferTexture().bind(0);
+    showShader.begin();
+    showShader.setUniformi("u_texture", 0);
+    StaticFullscreenQuad.renderUsing(showShader);
+    showShader.end();
   }
 
   private void fillUsing(FrameBuffer frameBuffer, Texture texture) {
