@@ -24,15 +24,18 @@ public class Loop {
   private final GBuffer gbuffer = GBuffer.withSize(WIDTH, HEIGHT);
   private final OrthographicCamera camera = createCamera();
   private final Buffer buffer = new Buffer();
-  private final ShaderProgram composeForBloomShader = ResourceLoader.loadShader("data/screenspace.vert", "data/composeForBloom.frag");
-  private final ShaderProgram flareShader = ResourceLoader.loadShader("data/screenspace.vert", "data/flare.frag");
+  private final ShaderProgram mixColorWithBlurredEmissive = ResourceLoader.loadShader("data/screenspace.vert", "data/mixColorWithBlurredEmissive.frag");
+  private final ShaderProgram bloomCutoffShader = ResourceLoader.loadShader("data/screenspace.vert", "data/bloomCutoff.frag");
   private final ShaderProgram showShader = ResourceLoader.loadShader("data/screenspace.vert", "data/buffer.frag");
+  private final ShaderProgram flareShader = ResourceLoader.loadShader("data/screenspace.vert", "data/flare.frag");
   private final ShaderProgram composeShader = ResourceLoader.loadShader("data/screenspace.vert", "data/compose.frag");
   private final GBufferTexture gBufferTexture = loadTestGBufferTexture();
   private final ShapeRenderer shapeRenderer = new ShapeRenderer();
   private final Blurer blurer = new Blurer();
   private float elapsedTime;
-  private final FrameBuffer tempBuffer = FrameBufferCreator.createDefault(512, 512);
+  private final FrameBuffer colorPlusEmissiveBuffer = FrameBufferCreator.createDefault(WIDTH, HEIGHT);
+  private final FrameBuffer bloomBufferPre = FrameBufferCreator.createDefault(512, 512);
+  private final FrameBuffer bloomBufferPost = FrameBufferCreator.createDefault(512, 512);
 
   private static OrthographicCamera createCamera() {
     OrthographicCamera cam = new OrthographicCamera();
@@ -53,6 +56,7 @@ public class Loop {
     Benchmark.start("storing vertex buffer");
     buffer.updateProjection(camera.combined);
     renderQuad(384, 384);
+    //renderQuad(Gdx.input.getX(), Gdx.input.getY());
     fillUsing(gbuffer.color, gBufferTexture.color);
     fillUsing(gbuffer.emissive, gBufferTexture.emissive);
     buffer.reset();
@@ -70,35 +74,45 @@ public class Loop {
     blurer.blur(gbuffer.emissive);
     Benchmark.end();
 
-    Benchmark.start("mixing bloom buffer");
-    tempBuffer.begin();
+    Benchmark.start("mix color with emissive");
+    colorPlusEmissiveBuffer.begin();
     gbuffer.color.getColorBufferTexture().bind(0);
     blurer.blurDownsamplesComposition.getColorBufferTexture().bind(1);
-    composeForBloomShader.begin();
-    composeForBloomShader.setUniformi("u_texture_color", 0);
-    composeForBloomShader.setUniformi("u_texture_emissive", 1);
-    StaticFullscreenQuad.renderUsing(composeForBloomShader);
-    composeForBloomShader.end();
-    tempBuffer.end();
+    mixColorWithBlurredEmissive.begin();
+    mixColorWithBlurredEmissive.setUniformi("u_texture_color", 0);
+    mixColorWithBlurredEmissive.setUniformi("u_texture_emissive", 1);
+    StaticFullscreenQuad.renderUsing(mixColorWithBlurredEmissive);
+    mixColorWithBlurredEmissive.end();
+    colorPlusEmissiveBuffer.end();
+    Benchmark.end();
+
+    Benchmark.start("bloom cutoff");
+    bloomBufferPre.begin();
+    colorPlusEmissiveBuffer.getColorBufferTexture().bind(0);
+    bloomCutoffShader.begin();
+    bloomCutoffShader.setUniformi("u_texture", 0);
+    StaticFullscreenQuad.renderUsing(bloomCutoffShader);
+    bloomCutoffShader.end();
+    bloomBufferPre.end();
     Benchmark.end();
 
     Benchmark.start("bloom blur");
-    blurer.blur(tempBuffer);
+    blurer.blur(bloomBufferPre);
     Benchmark.end();
 
     Benchmark.start("anamorphic flares");
-    tempBuffer.begin();
+    bloomBufferPost.begin();
     blurer.blurDownsamplesComposition.getColorBufferTexture().bind(0);
     flareShader.begin();
     flareShader.setUniformi("u_texture", 0);
     StaticFullscreenQuad.renderUsing(flareShader);
     flareShader.end();
-    tempBuffer.end();
+    bloomBufferPost.end();
     Benchmark.end();
 
-    Benchmark.start("mixing & presentation");
+    Benchmark.start("mix & present");
     gbuffer.color.getColorBufferTexture().bind(0);
-    tempBuffer.getColorBufferTexture().bind(1);
+    bloomBufferPost.getColorBufferTexture().bind(1);
     composeShader.begin();
     composeShader.setUniformi("u_texture_color", 0);
     composeShader.setUniformi("u_texture_bloom", 1);
@@ -106,7 +120,7 @@ public class Loop {
     composeShader.end();
     Benchmark.end();
 
-    Logger.log("" + Benchmark.generateRaportAndReset());
+    Logger.log(Gdx.graphics.getFramesPerSecond() + " " + Benchmark.generateRaportAndReset());
   }
 
   private void fillUsing(FrameBuffer frameBuffer, Texture texture) {
