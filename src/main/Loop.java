@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import main.debug.Benchmark;
 import main.rendering.Blurer;
 import main.rendering.Buffer;
@@ -25,17 +24,13 @@ public class Loop {
   private final OrthographicCamera camera = createCamera();
   private final Buffer buffer = new Buffer();
   private final ShaderProgram mixColorWithBlurredEmissive = ResourceLoader.loadShader("data/screenspace.vert", "data/mixColorWithBlurredEmissive.frag");
-  private final ShaderProgram bloomCutoffShader = ResourceLoader.loadShader("data/screenspace.vert", "data/bloomCutoff.frag");
   private final ShaderProgram showShader = ResourceLoader.loadShader("data/screenspace.vert", "data/buffer.frag");
   private final ShaderProgram flareShader = ResourceLoader.loadShader("data/screenspace.vert", "data/flare.frag");
-  private final ShaderProgram composeShader = ResourceLoader.loadShader("data/screenspace.vert", "data/compose.frag");
   private final GBufferTexture gBufferTexture = loadTestGBufferTexture();
-  private final ShapeRenderer shapeRenderer = new ShapeRenderer();
   private final Blurer blurer = new Blurer();
   private float elapsedTime;
   private final FrameBuffer colorPlusEmissiveBuffer = FrameBufferCreator.createDefault(WIDTH, HEIGHT);
-  private final FrameBuffer bloomBufferPre = FrameBufferCreator.createDefault(512, 512);
-  private final FrameBuffer bloomBufferPost = FrameBufferCreator.createDefault(512, 512);
+  private final FrameBuffer emissiveFlares = FrameBufferCreator.createDefault(512, 512);
 
   private static OrthographicCamera createCamera() {
     OrthographicCamera cam = new OrthographicCamera();
@@ -65,10 +60,20 @@ public class Loop {
     blurer.blur(gbuffer.emissive, 1);
     Benchmark.end();
 
+    Benchmark.start("emissive anamorphic flares");
+    emissiveFlares.begin();
+    blurer.result.getColorBufferTexture().bind(0);
+    flareShader.begin();
+    flareShader.setUniformi("u_texture", 0);
+    StaticFullscreenQuad.renderUsing(flareShader);
+    flareShader.end();
+    emissiveFlares.end();
+    Benchmark.end();
+
     Benchmark.start("mix color with emissive");
     colorPlusEmissiveBuffer.begin();
     gbuffer.color.getColorBufferTexture().bind(0);
-    blurer.result.getColorBufferTexture().bind(1);
+    emissiveFlares.getColorBufferTexture().bind(1);
     mixColorWithBlurredEmissive.begin();
     mixColorWithBlurredEmissive.setUniformi("u_texture_color", 0);
     mixColorWithBlurredEmissive.setUniformi("u_texture_emissive", 1);
@@ -77,39 +82,7 @@ public class Loop {
     colorPlusEmissiveBuffer.end();
     Benchmark.end();
 
-    Benchmark.start("bloom cutoff");
-    bloomBufferPre.begin();
-    colorPlusEmissiveBuffer.getColorBufferTexture().bind(0);
-    bloomCutoffShader.begin();
-    bloomCutoffShader.setUniformi("u_texture", 0);
-    StaticFullscreenQuad.renderUsing(bloomCutoffShader);
-    bloomCutoffShader.end();
-    bloomBufferPre.end();
-    Benchmark.end();
-
-    Benchmark.start("bloom blur");
-    blurer.blur(bloomBufferPre, 1);
-    Benchmark.end();
-
-/*    Benchmark.start("anamorphic flares");
-    bloomBufferPost.begin();
-    blurer.result.getColorBufferTexture().bind(0);
-    flareShader.begin();
-    flareShader.setUniformi("u_texture", 0);
-    StaticFullscreenQuad.renderUsing(flareShader);
-    flareShader.end();
-    bloomBufferPost.end();
-    Benchmark.end();
-*/
-    Benchmark.start("mix & present");
-    colorPlusEmissiveBuffer.getColorBufferTexture().bind(0);
-    blurer.result.getColorBufferTexture().bind(1);
-    composeShader.begin();
-    composeShader.setUniformi("u_texture_color", 0);
-    composeShader.setUniformi("u_texture_bloom", 1);
-    StaticFullscreenQuad.renderUsing(composeShader);
-    composeShader.end();
-    Benchmark.end();
+    show(colorPlusEmissiveBuffer);
 
     Logger.log(Gdx.graphics.getFramesPerSecond() + " " + Benchmark.generateRaportAndReset());
   }
