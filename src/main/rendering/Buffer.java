@@ -9,7 +9,7 @@ import java.util.Arrays;
 
 public class Buffer {
 
-  private final static int QUADS_MAX_COUNT = 16;
+  private final static int QUADS_MAX_COUNT = 32;
   private final static int QUADS_MAX_INDICES = QUADS_MAX_COUNT * 6;
   private final Mesh mesh = initialiseEmptyMesh();
   private final float[] vertices = new float[QUADS_MAX_COUNT * 2 * 2];

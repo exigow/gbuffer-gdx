@@ -1,7 +1,7 @@
 uniform sampler2D u_texture;
 
 
-uniform vec2 u_viewportInverse;
+uniform vec2 texel;
 uniform float FXAA_REDUCE_MIN;
 uniform float FXAA_REDUCE_MUL;
 uniform float FXAA_SPAN_MAX;
@@ -64,5 +64,5 @@ vec4 fxaa(sampler2D texture, vec2 texCoords, vec2 viewportInv) {
 }
 
 void main() {
-	gl_FragColor = fxaa(u_texture, v_texCoords, u_viewportInverse);
+	gl_FragColor = fxaa(u_texture, v_texCoords, texel);
 }

@@ -9,7 +9,7 @@ import main.utils.ResourceLoader;
 public class Blurer {
 
   private static final int SIZE = 512;
-  private final ShaderProgram addShader = ResourceLoader.loadShader("data/screenspace.vert", "data/add.frag");
+  private final ShaderProgram addShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/add.frag");
   public final FrameBuffer result = FrameBufferCreator.createDefault(SIZE, SIZE);
   private final TwoPassBlurBuffer sub512 = new TwoPassBlurBuffer(SIZE);
   private final TwoPassBlurBuffer sub256 = new TwoPassBlurBuffer(SIZE / 2);
@@ -45,7 +45,7 @@ public class Blurer {
 
   private static class TwoPassBlurBuffer {
 
-    private final ShaderProgram kawaseShader = ResourceLoader.loadShader("data/screenspace.vert", "data/gauss_1d_pass_5_lookups.frag");
+    private final ShaderProgram kawaseShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/gauss_1d_pass_5_lookups.frag");
     public final FrameBuffer vertical;
     public final FrameBuffer horizontal;
 
