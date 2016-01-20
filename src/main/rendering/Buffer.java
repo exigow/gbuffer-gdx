@@ -5,23 +5,24 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import main.utils.ResourceLoader;
 
+import java.util.Arrays;
+
 public class Buffer {
 
   private final static int QUADS_MAX_COUNT = 8;
   private final static int QUADS_MAX_INDICES = QUADS_MAX_COUNT * 6;
   private final Mesh mesh = initialiseEmptyMesh();
   private final float[] vertices = new float[QUADS_MAX_COUNT * 2 * 2];
-  private final ShaderProgram bufferShader;
+  private final float[] pvertices = new float[QUADS_MAX_COUNT * 2 * 2];
+  private final ShaderProgram bufferShader = ResourceLoader.loadShader("data/buffer/paint.vert", "data/buffer/paint.frag");
+  private final ShaderProgram velocityShader = ResourceLoader.loadShader("data/buffer/velocity.vert", "data/buffer/velocity.frag");
   private int pivot = 0;
   private final Matrix4 projectionMatrix = new Matrix4();
-
-  public Buffer() {
-    bufferShader = ResourceLoader.loadShader("data/buffer.vert", "data/buffer.frag");
-  }
 
   private static Mesh initialiseEmptyMesh() {
     VertexAttribute[] attributes = new VertexAttribute[] {
       new VertexAttribute(VertexAttributes.Usage.Position, 2, "a_position"),
+      new VertexAttribute(VertexAttributes.Usage.Generic, 2, "a_velocity"),
       new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, 2, "a_texCoord0")
     };
     int maxVertices = QUADS_MAX_COUNT * 4;
@@ -45,12 +46,13 @@ public class Buffer {
   }
 
   public void putVertex(float x, float y, float u, float v) {
-    put(x, y, u, v);
-  }
-
-  private void put(float... values) {
-    for (float value : values)
-      vertices[pivot++] = value;
+    vertices[pivot] = x;
+    vertices[pivot + 1] = y;
+    vertices[pivot + 2] = .5f + (vertices[pivot] - pvertices[pivot]) * .0025f;
+    vertices[pivot + 3] = .5f + (vertices[pivot + 1] - pvertices[pivot + 1]) * .0025f;
+    vertices[pivot + 4] = u;
+    vertices[pivot + 5] = v;
+    pivot += 6;
   }
 
   public void updateProjection(Matrix4 actualized) {
@@ -68,7 +70,17 @@ public class Buffer {
     bufferShader.end();
   }
 
+  public void paintVelocity() {
+    velocityShader.begin();
+    velocityShader.setUniformMatrix("u_projTrans", projectionMatrix);
+    mesh.setVertices(vertices, 0, pivot);
+    mesh.getIndicesBuffer().position(0);
+    mesh.render(velocityShader, GL20.GL_TRIANGLES, 0, 3 * QUADS_MAX_COUNT);
+    velocityShader.end();
+  }
+
   public void reset() {
+    System.arraycopy(vertices, 0, pvertices, 0, vertices.length);
     pivot = 0;
   }
 

@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.MathUtils;
 import main.debug.Benchmark;
 import main.rendering.Blurer;
 import main.rendering.Buffer;
@@ -24,8 +25,9 @@ public class Loop {
   private final OrthographicCamera camera = createCamera();
   private final Buffer buffer = new Buffer();
   private final ShaderProgram mixColorWithBlurredEmissive = ResourceLoader.loadShader("data/screenspace.vert", "data/mixColorWithBlurredEmissive.frag");
-  private final ShaderProgram showShader = ResourceLoader.loadShader("data/screenspace.vert", "data/buffer.frag");
+  private final ShaderProgram showShader = ResourceLoader.loadShader("data/screenspace.vert", "data/show.frag");
   private final ShaderProgram flareShader = ResourceLoader.loadShader("data/screenspace.vert", "data/flare.frag");
+  private final ShaderProgram motionBlurShader = ResourceLoader.loadShader("data/screenspace.vert", "data/motion_blur.frag");
   private final GBufferTexture gBufferTexture = loadTestGBufferTexture();
   private final Blurer blurer = new Blurer();
   private float elapsedTime;
@@ -50,9 +52,14 @@ public class Loop {
 
     Benchmark.start("storing vertex buffer");
     buffer.updateProjection(camera.combined);
-    renderQuad(Gdx.input.getX(), Gdx.input.getY());
+    renderRotatedQuad(Gdx.input.getX(), Gdx.input.getY(), elapsedTime * 8);
     fillUsing(gbuffer.color, gBufferTexture.color);
     fillUsing(gbuffer.emissive, gBufferTexture.emissive);
+    gbuffer.velocity.begin();
+    Gdx.gl20.glClearColor(.5f, .5f, 0, 1);
+    Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    buffer.paintVelocity();
+    gbuffer.velocity.end();
     buffer.reset();
     Benchmark.end();
 
@@ -60,7 +67,30 @@ public class Loop {
     blurer.blur(gbuffer.emissive, 1);
     Benchmark.end();
 
-    Benchmark.start("emissive anamorphic flares");
+    Benchmark.start("mix color with emissive");
+    colorPlusEmissiveBuffer.begin();
+    gbuffer.color.getColorBufferTexture().bind(0);
+    blurer.result.getColorBufferTexture().bind(1);
+    mixColorWithBlurredEmissive.begin();
+    mixColorWithBlurredEmissive.setUniformi("u_texture_color", 0);
+    mixColorWithBlurredEmissive.setUniformi("u_texture_emissive", 1);
+    StaticFullscreenQuad.renderUsing(mixColorWithBlurredEmissive);
+    mixColorWithBlurredEmissive.end();
+    colorPlusEmissiveBuffer.end();
+    Benchmark.end();
+
+    //show(colorPlusEmissiveBuffer);
+
+    colorPlusEmissiveBuffer.getColorBufferTexture().bind(0);
+    gbuffer.velocity.getColorBufferTexture().bind(1);
+    motionBlurShader.begin();
+    motionBlurShader.setUniformf("texel", 1f / HEIGHT);
+    motionBlurShader.setUniformi("u_texture_source", 0);
+    motionBlurShader.setUniformi("u_texture_velocity", 1);
+    StaticFullscreenQuad.renderUsing(motionBlurShader);
+    motionBlurShader.end();
+
+    /*Benchmark.start("emissive anamorphic flares");
     emissiveFlares.begin();
     blurer.result.getColorBufferTexture().bind(0);
     flareShader.begin();
@@ -70,21 +100,12 @@ public class Loop {
     emissiveFlares.end();
     Benchmark.end();
 
-    Benchmark.start("mix color with emissive");
-    colorPlusEmissiveBuffer.begin();
-    gbuffer.color.getColorBufferTexture().bind(0);
-    emissiveFlares.getColorBufferTexture().bind(1);
-    mixColorWithBlurredEmissive.begin();
-    mixColorWithBlurredEmissive.setUniformi("u_texture_color", 0);
-    mixColorWithBlurredEmissive.setUniformi("u_texture_emissive", 1);
-    StaticFullscreenQuad.renderUsing(mixColorWithBlurredEmissive);
-    mixColorWithBlurredEmissive.end();
-    colorPlusEmissiveBuffer.end();
-    Benchmark.end();
+   */
 
-    show(colorPlusEmissiveBuffer);
 
-    Logger.log(Gdx.graphics.getFramesPerSecond() + " " + Benchmark.generateRaportAndReset());
+    //show(gbuffer.velocity);
+
+    //Logger.log(Gdx.graphics.getFramesPerSecond() + " " + Benchmark.generateRaportAndReset());
   }
 
   private void show(FrameBuffer show) {
@@ -113,6 +134,17 @@ public class Loop {
     buffer.putVertex(x + scale, y - scale, 1, 0);
     buffer.putVertex(x + scale, y + scale, 1, 1);
     buffer.putVertex(x - scale, y + scale, 0, 1);
+  }
+
+  private void renderRotatedQuad(float x, float y, float r) {
+    float cos = MathUtils.cos(r);
+    float sin = MathUtils.sin(r);
+
+    float scale = 256;
+    buffer.putVertex(x - cos * scale, y - sin * scale, 0, 0);
+    buffer.putVertex(x + sin * scale, y - cos * scale, 1, 0);
+    buffer.putVertex(x + cos * scale, y + sin * scale, 1, 1);
+    buffer.putVertex(x - sin * scale, y + cos * scale, 0, 1);
   }
 
 }
