@@ -9,8 +9,8 @@ public class Main {
 
   public static void main(String[] args) {
     new LwjglApplication(new Wrapper(), new LwjglApplicationConfiguration() {{
-      width = 1280;
-      height = 960;
+      width = 1024;
+      height = 768;
       resizable = false;
     }});
    }
