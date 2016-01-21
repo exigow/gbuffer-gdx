@@ -77,6 +77,7 @@ public class Loop {
     buffer.reset();
     Benchmark.end();
 
+    Benchmark.start("motion blur");
     gbuffer.color.getColorBufferTexture().bind(0);
     gbuffer.velocity.getColorBufferTexture().bind(1);
     pingPong.first.begin();
@@ -87,6 +88,7 @@ public class Loop {
     StaticFullscreenQuad.renderUsing(motionBlurShader);
     motionBlurShader.end();
     pingPong.first.end();
+    Benchmark.end();
 
     Benchmark.start("cool stuff");
     aberration.apply(pingPong.first, pingPong.second);

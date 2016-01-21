@@ -14,6 +14,8 @@ public class ChromaticAberration {
     from.getColorBufferTexture().bind(0);
     shader.begin();
     shader.setUniformi("u_texture", 0);
+    float[] texel = new float[] {1f / 1280f, 1f / 960f};
+    shader.setUniform2fv("texel", texel, 0, texel.length);
     StaticFullscreenQuad.renderUsing(shader);
     shader.end();
     to.end();

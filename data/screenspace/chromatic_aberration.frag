@@ -1,7 +1,7 @@
 uniform sampler2D u_texture;
 varying vec2 v_texCoords;
-
-const vec2 texel = vec2(1.0 / 1280.0, 1.0 / 960.0);
+uniform vec2 texel;
+//const vec2 texel = vec2(1.0 / 1280.0, 1.0 / 960.0);
 
 const vec3 samples[5] = {
     vec3(.5, 0, 0),
