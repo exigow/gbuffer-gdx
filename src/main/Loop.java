@@ -63,10 +63,13 @@ public class Loop {
 
     Benchmark.start("storing vertex buffer");
     buffer.updateProjection(camera.combined);
-    renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 2) * .5f), 256, elapsedTime * 4);
-    renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 3) * .5f), 768, elapsedTime * 8);
-    renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 4) * .5f), 512, -elapsedTime * 12);
-    renderRotatedQuad(Gdx.input.getX(), Gdx.input.getY(), elapsedTime * .125f);
+    renderRotatedQuad(WIDTH / 2, HEIGHT / 2, -elapsedTime, 784);
+    renderRotatedQuad(256, 256, elapsedTime * 16, 256);
+    renderRotatedQuad(1024, 512, elapsedTime * .125f, 256 + sin(elapsedTime * 32) * 128);
+    renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 2) * .5f), 256, elapsedTime * 4, 128);
+    renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 3) * .5f), 768, elapsedTime * 8, 256);
+    renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 4) * .5f), 512, -elapsedTime * 12, 192);
+    renderRotatedQuad(Gdx.input.getX(), Gdx.input.getY(), elapsedTime * .125f, 256);
     fillUsing(gbuffer.color, gBufferTexture.color);
     fillUsing(gbuffer.emissive, gBufferTexture.emissive);
     gbuffer.velocity.begin();
@@ -97,6 +100,8 @@ public class Loop {
     Benchmark.end();
 
     show(pingPong.second);
+
+    //show(gbuffer.velocity);
 
     /*Benchmark.start("blur emissive");
     blurer.blur(gbuffer.emissive, 1);
@@ -140,19 +145,9 @@ public class Loop {
     Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
   }
 
-  private void renderQuad(float x, float y) {
-    float scale = 256;
-    buffer.putVertex(x - scale, y - scale, 0, 0);
-    buffer.putVertex(x + scale, y - scale, 1, 0);
-    buffer.putVertex(x + scale, y + scale, 1, 1);
-    buffer.putVertex(x - scale, y + scale, 0, 1);
-  }
-
-  private void renderRotatedQuad(float x, float y, float r) {
+  private void renderRotatedQuad(float x, float y, float r, float scale) {
     float cos = MathUtils.cos(r);
     float sin = sin(r);
-
-    float scale = 256;
     buffer.putVertex(x - cos * scale, y - sin * scale, 0, 0);
     buffer.putVertex(x + sin * scale, y - cos * scale, 1, 0);
     buffer.putVertex(x + cos * scale, y + sin * scale, 1, 1);
