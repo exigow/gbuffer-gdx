@@ -34,7 +34,7 @@ public class Loop {
   //private final ShaderProgram mixColorWithBlurredEmissive = ResourceLoader.loadShader("data/screenspace.vert", "data/mixColorWithBlurredEmissive.frag");
   private final ShaderProgram showShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/show.frag");
   //private final ShaderProgram flareShader = ResourceLoader.loadShader("data/screenspace.vert", "data/flare.frag");
-  //private final ShaderProgram motionBlurShader = ResourceLoader.loadShader("data/screenspace.vert", "data/motion_blur.frag");
+  private final ShaderProgram motionBlurShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/motion_blur.frag");
   private final Sharpen sharpen = new Sharpen();
   private final Fxaa fxaa = new Fxaa();
   private final ChromaticAberration aberration = new ChromaticAberration();
@@ -63,6 +63,7 @@ public class Loop {
 
     Benchmark.start("storing vertex buffer");
     buffer.updateProjection(camera.combined);
+    renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 2) * .5f), 256, elapsedTime * 4);
     renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 3) * .5f), 768, elapsedTime * 8);
     renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 4) * .5f), 512, -elapsedTime * 12);
     renderRotatedQuad(Gdx.input.getX(), Gdx.input.getY(), elapsedTime * .125f);
@@ -76,13 +77,24 @@ public class Loop {
     buffer.reset();
     Benchmark.end();
 
+    gbuffer.color.getColorBufferTexture().bind(0);
+    gbuffer.velocity.getColorBufferTexture().bind(1);
+    pingPong.first.begin();
+    motionBlurShader.begin();
+    motionBlurShader.setUniformi("u_texture_source", 0);
+    motionBlurShader.setUniformi("u_texture_velocity", 1);
+    motionBlurShader.setUniformf("texel", 1f / HEIGHT);
+    StaticFullscreenQuad.renderUsing(motionBlurShader);
+    motionBlurShader.end();
+    pingPong.first.end();
+
     Benchmark.start("cool stuff");
-    aberration.apply(gbuffer.color, pingPong.first);
-    fxaa.apply(pingPong.first, pingPong.second);
-    sharpen.apply(pingPong.second, pingPong.first);
+    aberration.apply(pingPong.first, pingPong.second);
+    fxaa.apply(pingPong.second, pingPong.first);
+    sharpen.apply(pingPong.first, pingPong.second);
     Benchmark.end();
 
-    show(pingPong.first);
+    show(pingPong.second);
 
     /*Benchmark.start("blur emissive");
     blurer.blur(gbuffer.emissive, 1);
@@ -102,10 +114,6 @@ public class Loop {
     mixColorWithBlurredEmissive.end();
     colorPlusEmissiveBuffer.end();
     Benchmark.end();*/
-
-    //show(gbuffer.color);
-
-    //show(gbuffer.velocity);
 
     Logger.log(Gdx.graphics.getFramesPerSecond() + " " + Benchmark.generateRaportAndReset());
   }

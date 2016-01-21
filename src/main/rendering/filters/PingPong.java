@@ -18,13 +18,20 @@ public class PingPong {
     return new PingPong(width, heigth);
   }
 
-
   public void swap() {
     swapper = !swapper;
   }
 
-  private FrameBuffer getResult() {
+  /*private FrameBuffer from() {
     return swapper ? first : second;
+  }
+
+  private FrameBuffer to() {
+    return !swapper ? first : second;
+  }*/
+
+  public void begin(FrameBuffer start) {
+
   }
 
 }
