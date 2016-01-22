@@ -34,6 +34,9 @@ public class Loop {
   private final ShaderProgram mixColorWithBlurredEmissive = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/compose.frag");
   private final ShaderProgram showShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/show.frag");
   private final ShaderProgram motionBlurShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/motion_blur.frag");
+  private final ShaderProgram cutoffShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/cutoff.frag");
+  private final ShaderProgram flareShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/flare.frag");
+  private final ShaderProgram mixShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/mix-bloom.frag");
   private final Sharpen sharpen = new Sharpen();
   private final Fxaa fxaa = new Fxaa();
   private final ChromaticAberration aberration = new ChromaticAberration();
@@ -42,6 +45,8 @@ public class Loop {
   private float elapsedTime;
   private final FrameBuffer colorPlusEmissiveBuffer = FrameBufferCreator.createDefault(WIDTH, HEIGHT);
   private final PingPong pingPong = PingPong.withSize(WIDTH, HEIGHT);
+  private final FrameBuffer cutoffBuffer = FrameBufferCreator.createDefault(512, 512);
+  private final FrameBuffer bloomBuffer = FrameBufferCreator.createDefault(512, 512);
 
   private static OrthographicCamera createCamera() {
     OrthographicCamera cam = new OrthographicCamera();
@@ -61,7 +66,7 @@ public class Loop {
 
     Benchmark.start("storing vertex buffer");
     buffer.updateProjection(camera.combined);
-    renderRotatedQuad(WIDTH / 2, HEIGHT / 2, -elapsedTime, 784);
+    renderRotatedQuad(WIDTH / 2, HEIGHT / 2, -elapsedTime, 1024);
     renderRotatedQuad(256, 256, elapsedTime * 16, 256);
     renderRotatedQuad(1024, 512, elapsedTime * .125f, 256 + sin(elapsedTime * 32) * 128);
     renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 2) * .5f), 256, elapsedTime * 4, 128);
@@ -107,13 +112,45 @@ public class Loop {
     pingPong.first.end();
     Benchmark.end();
 
-    Benchmark.start("cool stuff");
-    aberration.apply(pingPong.first, pingPong.second);
-    fxaa.apply(pingPong.second, pingPong.first);
-    sharpen.apply(pingPong.first, pingPong.second);
+    Benchmark.start("bloom cutoff");
+    cutoffBuffer.begin();
+    pingPong.first.getColorBufferTexture().bind(0);
+    cutoffShader.begin();
+    cutoffShader.setUniformi("u_texture", 0);
+    StaticFullscreenQuad.renderUsing(cutoffShader);
+    cutoffShader.end();
+    cutoffBuffer.end();
     Benchmark.end();
 
-    show(pingPong.second);
+    Benchmark.start("flares");
+    bloomBuffer.begin();
+    cutoffBuffer.getColorBufferTexture().bind(0);
+    flareShader.begin();
+    flareShader.setUniformi("u_texture", 0);
+    StaticFullscreenQuad.renderUsing(flareShader);
+    flareShader.end();
+    bloomBuffer.end();
+    Benchmark.end();
+
+    Benchmark.start("add flares");
+    pingPong.second.begin();
+    pingPong.first.getColorBufferTexture().bind(0);
+    bloomBuffer.getColorBufferTexture().bind(1);
+    mixShader.begin();
+    mixShader.setUniformi("u_texture_base", 0);
+    mixShader.setUniformi("u_texture_bloom", 1);
+    StaticFullscreenQuad.renderUsing(mixShader);
+    mixShader.end();
+    pingPong.second.end();
+    Benchmark.end();
+
+    Benchmark.start("abber + fxaa + sharp");
+    aberration.apply(pingPong.second, pingPong.first);
+    fxaa.apply(pingPong.first, pingPong.second);
+    sharpen.apply(pingPong.second, pingPong.first);
+    Benchmark.end();
+
+    show(pingPong.first);
 
     Logger.log(Gdx.graphics.getFramesPerSecond() + " " + Benchmark.generateRaportAndReset());
   }
