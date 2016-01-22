@@ -8,6 +8,6 @@ float luminance(vec3 source) {
 void main() {
 	vec3 color = texture2D(u_texture, v_texCoords).xyz;
 	float luma = luminance(color);
-	float powered = pow(luma, 4);
+	float powered = pow(luma + .25, 4);
 	gl_FragColor = vec4(color * powered, 1);
 }
