@@ -1,5 +1,6 @@
 varying vec2 v_texCoords;
 uniform sampler2D u_texture;
+uniform sampler2D u_texture_lens_dirt;
 
 float distances[8] = {
     0.5f,
@@ -12,34 +13,35 @@ float distances[8] = {
     3.9f
 };
 
-vec3 factors[3] = {
-    vec3(1, 0, 0),
-    vec3(0, 1, 0),
-    vec3(0, 0, 1),
-};
+vec3 distorted(vec2 uv, vec2 dir) {
+    vec3 result = vec3(0);
+    vec2 scale = dir * .025;
+    result.r += texture2D(u_texture, uv + scale).r;
+    result.g += texture2D(u_texture, uv).g;
+    result.b += texture2D(u_texture, uv - scale).b;
+    return result;
+}
 
-float z = .025;
-float scales[3] = {
-    1 + z, 1, 1 - z
-};
+vec3 circularFlareColor(vec2 dir) {
+    vec2 normDir = normalize(dir) * .4;
+    vec3 curcilarFlareColor = distorted(v_texCoords + normDir, dir);
+    curcilarFlareColor *= .875 * pow(length(dir), 2);
+    return curcilarFlareColor;
+}
+
+vec3 bounce(int i, vec2 dir) {
+    vec2 uv = v_texCoords + dir * distances[i];
+    float weight = clamp(1 - length(vec2(.5) - uv) * 2, 0, 1);
+    return distorted(uv, dir) * .125 * weight;
+}
 
 void main() {
     vec2 dir = .5 - v_texCoords.xy;
-    // bounces flare
-    vec3 bouncesFlareColor = texture2D(u_texture, v_texCoords.xy).xyz;
-    for (int f = 0; f < 3; f++) {
-        for (int i = 0; i < 8; i++) {
-            vec2 uv = v_texCoords.xy + dir * scales[f] * distances[i];
-            bouncesFlareColor += texture2D(u_texture, uv).xyz * factors[f] * .125;
-        }
-    }
-    // circular flare
-    vec2 normDir = normalize(dir) * 0.4f;
-    vec3 curcilarFlareColor = vec3(0);
-    for (int f = 0; f < 3; f++) {
-        curcilarFlareColor += texture2D(u_texture, v_texCoords.xy + normDir * scales[f]).xyz * factors[f];
-    }
-    curcilarFlareColor *= .5 * pow(length(dir), 2);
-    // mix
-    gl_FragColor = vec4(bouncesFlareColor + curcilarFlareColor, 1);
+    vec3 bounces = distorted(v_texCoords, dir);
+    for (int i = 0; i < 8; i++)
+        bounces += bounce(i, dir);
+    vec3 circular = circularFlareColor(dir);
+    vec3 dirt = texture2D(u_texture_lens_dirt, v_texCoords).xyz;
+    vec3 combined = bounces + circular;
+    gl_FragColor = vec4(combined + (combined * dirt), 1);
 }

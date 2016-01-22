@@ -27,7 +27,7 @@ public class FlareTest implements Demo {
   //private final FrameBuffer bufferB = FrameBufferCreator.createDefault(512, 512);
   private final Blurer blurer = new Blurer();
   //private final ShaderProgram blurShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/gauss_1d_pass_5_lookups.frag");
-  private final ShaderProgram flareShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/flare-tweaks.frag");
+  private final ShaderProgram flareShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/flare.frag");
   private final ShapeRenderer renderer = new ShapeRenderer();
   private final OrthographicCamera camera = createCamera();
   private final Texture lensDirt = ResourceLoader.loadTexture("data/textures/lens-dirt.png");
