@@ -17,6 +17,7 @@ import main.rendering.utils.FrameBufferCreator;
 import main.rendering.utils.StaticFullscreenQuad;
 import main.utils.Logger;
 import main.utils.ResourceLoader;
+import main.utils.lazyrun.Demo;
 
 import static com.badlogic.gdx.math.MathUtils.lerp;
 import static com.badlogic.gdx.math.MathUtils.sin;
