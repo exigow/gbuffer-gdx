@@ -12,10 +12,7 @@ import main.rendering.Blurer;
 import main.rendering.Buffer;
 import main.rendering.GBuffer;
 import main.rendering.GBufferTexture;
-import main.rendering.filters.ChromaticAberration;
-import main.rendering.filters.Fxaa;
-import main.rendering.filters.PingPong;
-import main.rendering.filters.Sharpen;
+import main.rendering.filters.*;
 import main.rendering.utils.FrameBufferCreator;
 import main.rendering.utils.StaticFullscreenQuad;
 import main.utils.Logger;
@@ -34,12 +31,12 @@ public class Loop {
   private final ShaderProgram mixColorWithBlurredEmissive = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/compose.frag");
   private final ShaderProgram showShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/show.frag");
   private final ShaderProgram motionBlurShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/motion_blur.frag");
-  private final ShaderProgram cutoffShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/cutoff.frag");
-  private final ShaderProgram flareShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/flare.frag");
   private final ShaderProgram mixShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/mix-bloom.frag");
   private final Sharpen sharpen = new Sharpen();
   private final Fxaa fxaa = new Fxaa();
+  private final AnamorphicFlares flares = new AnamorphicFlares();
   private final ChromaticAberration aberration = new ChromaticAberration();
+  private final LuminanceCutoff cutoff = new LuminanceCutoff();
   private final GBufferTexture gBufferTexture = loadTestGBufferTexture();
   private final Blurer blurer = new Blurer();
   private float elapsedTime;
@@ -112,24 +109,12 @@ public class Loop {
     pingPong.first.end();
     Benchmark.end();
 
-    Benchmark.start("bloom cutoff");
-    cutoffBuffer.begin();
-    pingPong.first.getColorBufferTexture().bind(0);
-    cutoffShader.begin();
-    cutoffShader.setUniformi("u_texture", 0);
-    StaticFullscreenQuad.renderUsing(cutoffShader);
-    cutoffShader.end();
-    cutoffBuffer.end();
+    Benchmark.start("luma cutoff");
+    cutoff.apply(pingPong.first, cutoffBuffer);
     Benchmark.end();
 
     Benchmark.start("flares");
-    bloomBuffer.begin();
-    cutoffBuffer.getColorBufferTexture().bind(0);
-    flareShader.begin();
-    flareShader.setUniformi("u_texture", 0);
-    StaticFullscreenQuad.renderUsing(flareShader);
-    flareShader.end();
-    bloomBuffer.end();
+    flares.apply(cutoffBuffer, bloomBuffer);
     Benchmark.end();
 
     Benchmark.start("add flares");

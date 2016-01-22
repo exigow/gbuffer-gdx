@@ -9,12 +9,13 @@ import main.utils.ResourceLoader;
 public class Blurer {
 
   private static final int SIZE = 512;
+  private final ShaderProgram shader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/gauss_1d_pass_5_lookups.frag");
   private final ShaderProgram addShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/add.frag");
   public final FrameBuffer result = FrameBufferCreator.createDefault(SIZE, SIZE);
-  private final TwoPassBlurBuffer sub512 = new TwoPassBlurBuffer(SIZE);
-  private final TwoPassBlurBuffer sub256 = new TwoPassBlurBuffer(SIZE / 2);
-  private final TwoPassBlurBuffer sub128 = new TwoPassBlurBuffer(SIZE / 4);
-  private final TwoPassBlurBuffer sub64 = new TwoPassBlurBuffer(SIZE / 8);
+  private final TwoPassBlurBuffer sub512 = new TwoPassBlurBuffer(SIZE, shader);
+  private final TwoPassBlurBuffer sub256 = new TwoPassBlurBuffer(SIZE / 2, shader);
+  private final TwoPassBlurBuffer sub128 = new TwoPassBlurBuffer(SIZE / 4, shader);
+  private final TwoPassBlurBuffer sub64 = new TwoPassBlurBuffer(SIZE / 8, shader);
 
   public Blurer() {
   }
@@ -44,14 +45,15 @@ public class Blurer {
   }
 
   private static class TwoPassBlurBuffer {
-
-    private final ShaderProgram kawaseShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/gauss_1d_pass_5_lookups.frag");
+    
+    private final ShaderProgram shader;
     public final FrameBuffer vertical;
     public final FrameBuffer horizontal;
 
-    public TwoPassBlurBuffer(int size) {
+    public TwoPassBlurBuffer(int size, ShaderProgram shader) {
       vertical = FrameBufferCreator.createDefault(size, size);
       horizontal = FrameBufferCreator.createDefault(size, size);
+      this.shader = shader;
     }
 
     public void twoPassBlur(FrameBuffer source, float factor) {
@@ -63,13 +65,13 @@ public class Blurer {
       float texel = 1f / to.getHeight();
       to.begin();
       from.getColorBufferTexture().bind(0);
-      kawaseShader.begin();
-      kawaseShader.setUniformi("u_texture", 0);
-      kawaseShader.setUniformf("texel", texel);
-      kawaseShader.setUniformf("vecX", x);
-      kawaseShader.setUniformf("vecY", y);
-      StaticFullscreenQuad.renderUsing(kawaseShader);
-      kawaseShader.end();
+      shader.begin();
+      shader.setUniformi("u_texture", 0);
+      shader.setUniformf("texel", texel);
+      shader.setUniformf("vecX", x);
+      shader.setUniformf("vecY", y);
+      StaticFullscreenQuad.renderUsing(shader);
+      shader.end();
       to.end();
     }
 
