@@ -31,9 +31,9 @@ public class Loop {
   private final GBuffer gbuffer = GBuffer.withSize(WIDTH, HEIGHT);
   private final OrthographicCamera camera = createCamera();
   private final Buffer buffer = new Buffer();
-  //private final ShaderProgram mixColorWithBlurredEmissive = ResourceLoader.loadShader("data/screenspace.vert", "data/mixColorWithBlurredEmissive.frag");
+  private final ShaderProgram mixColorWithBlurredEmissive = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/compose.frag");
   private final ShaderProgram showShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/show.frag");
-  //private final ShaderProgram flareShader = ResourceLoader.loadShader("data/screenspace.vert", "data/flare.frag");
+  private final ShaderProgram flareShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/flare.frag");
   private final ShaderProgram motionBlurShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/motion_blur.frag");
   private final Sharpen sharpen = new Sharpen();
   private final Fxaa fxaa = new Fxaa();
@@ -41,9 +41,9 @@ public class Loop {
   private final GBufferTexture gBufferTexture = loadTestGBufferTexture();
   private final Blurer blurer = new Blurer();
   private float elapsedTime;
-  //private final FrameBuffer colorPlusEmissiveBuffer = FrameBufferCreator.createDefault(WIDTH, HEIGHT);
+  private final FrameBuffer colorPlusEmissiveBuffer = FrameBufferCreator.createDefault(WIDTH, HEIGHT);
   private final PingPong pingPong = PingPong.withSize(WIDTH, HEIGHT);
-  //private final FrameBuffer emissiveFlares = FrameBufferCreator.createDefault(512, 512);
+  private final FrameBuffer emissiveFlares = FrameBufferCreator.createDefault(512, 512);
 
   private static OrthographicCamera createCamera() {
     OrthographicCamera cam = new OrthographicCamera();
@@ -53,8 +53,8 @@ public class Loop {
 
   private static GBufferTexture loadTestGBufferTexture() {
     GBufferTexture texture = new GBufferTexture();
-    texture.color = ResourceLoader.loadTexture("data/textures/wall_color.png");
-    texture.emissive = ResourceLoader.loadTexture("data/textures/wall_emissive.png");
+    texture.color = ResourceLoader.loadTexture("data/textures/ship-color.png");
+    texture.emissive = ResourceLoader.loadTexture("data/textures/ship-emissive.png");
     return texture;
   }
 
@@ -70,18 +70,34 @@ public class Loop {
     renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 3) * .5f), 768, elapsedTime * 8, 256);
     renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 4) * .5f), 512, -elapsedTime * 12, 192);
     renderRotatedQuad(Gdx.input.getX(), Gdx.input.getY(), elapsedTime * .125f, 256);
-    fillUsing(gbuffer.color, gBufferTexture.color);
-    fillUsing(gbuffer.emissive, gBufferTexture.emissive);
+    fillColor(gbuffer.color, gBufferTexture.color);
+    fillColor(gbuffer.emissive, gBufferTexture.emissive);
     gbuffer.velocity.begin();
     Gdx.gl20.glClearColor(.5f, .5f, 0, 1);
     Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
-    buffer.paintVelocity();
+    buffer.paintVelocity(gBufferTexture.color);
     gbuffer.velocity.end();
     buffer.reset();
     Benchmark.end();
 
-    Benchmark.start("motion blur");
+    Benchmark.start("blur emissive");
+    blurer.blur(gbuffer.emissive, 1);
+    Benchmark.end();
+
+    Benchmark.start("mix color & emissive");
+    colorPlusEmissiveBuffer.begin();
     gbuffer.color.getColorBufferTexture().bind(0);
+    blurer.result.getColorBufferTexture().bind(1);
+    mixColorWithBlurredEmissive.begin();
+    mixColorWithBlurredEmissive.setUniformi("u_texture_color", 0);
+    mixColorWithBlurredEmissive.setUniformi("u_texture_emissive", 1);
+    StaticFullscreenQuad.renderUsing(mixColorWithBlurredEmissive);
+    mixColorWithBlurredEmissive.end();
+    colorPlusEmissiveBuffer.end();
+    Benchmark.end();
+
+    Benchmark.start("motion blur");
+    colorPlusEmissiveBuffer.getColorBufferTexture().bind(0);
     gbuffer.velocity.getColorBufferTexture().bind(1);
     pingPong.first.begin();
     motionBlurShader.begin();
@@ -101,27 +117,6 @@ public class Loop {
 
     show(pingPong.second);
 
-    //show(gbuffer.velocity);
-
-    /*Benchmark.start("blur emissive");
-    blurer.blur(gbuffer.emissive, 1);
-    Benchmark.end();*/
-
-    /*Benchmark.start("mixer");
-    colorPlusEmissiveBuffer.begin();
-    gbuffer.color.getColorBufferTexture().bind(0);
-    blurer.result.getColorBufferTexture().bind(1);
-    gbuffer.velocity.getColorBufferTexture().bind(2);
-    mixColorWithBlurredEmissive.begin();
-    mixColorWithBlurredEmissive.setUniformf("texel", 1f / HEIGHT);
-    mixColorWithBlurredEmissive.setUniformi("u_texture_color", 0);
-    mixColorWithBlurredEmissive.setUniformi("u_texture_emissive", 1);
-    mixColorWithBlurredEmissive.setUniformi("u_texture_velocity", 2);
-    StaticFullscreenQuad.renderUsing(mixColorWithBlurredEmissive);
-    mixColorWithBlurredEmissive.end();
-    colorPlusEmissiveBuffer.end();
-    Benchmark.end();*/
-
     Logger.log(Gdx.graphics.getFramesPerSecond() + " " + Benchmark.generateRaportAndReset());
   }
 
@@ -133,10 +128,10 @@ public class Loop {
     showShader.end();
   }
 
-  private void fillUsing(FrameBuffer frameBuffer, Texture texture) {
+  private void fillColor(FrameBuffer frameBuffer, Texture texture) {
     frameBuffer.begin();
     clearContext();
-    buffer.paint(texture);
+    buffer.paintColor(texture);
     frameBuffer.end();
   }
 

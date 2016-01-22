@@ -1,11 +1,10 @@
 package main.rendering;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import main.utils.ResourceLoader;
-
-import java.util.Arrays;
 
 public class Buffer {
 
@@ -59,24 +58,26 @@ public class Buffer {
     projectionMatrix.set(actualized);
   }
 
-  public void paint(Texture texture) {
-    texture.bind(0);
-    bufferShader.begin();
-    bufferShader.setUniformMatrix("u_projTrans", projectionMatrix);
-    bufferShader.setUniformi("u_texture", 0);
-    mesh.setVertices(vertices, 0, pivot);
-    mesh.getIndicesBuffer().position(0);
-    mesh.render(bufferShader, GL20.GL_TRIANGLES, 0, 3 * QUADS_MAX_COUNT);
-    bufferShader.end();
+  public void paintColor(Texture texture) {
+    paint(texture, bufferShader);
   }
 
-  public void paintVelocity() {
-    velocityShader.begin();
-    velocityShader.setUniformMatrix("u_projTrans", projectionMatrix);
+  public void paintVelocity(Texture texture) {
+    paint(texture, velocityShader);
+  }
+
+  private void paint(Texture texture, ShaderProgram shader) {
+    Gdx.gl.glEnable(GL20.GL_BLEND);
+    Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+    texture.bind(0);
+    shader.begin();
+    shader.setUniformMatrix("u_projTrans", projectionMatrix);
+    shader.setUniformi("u_texture", 0);
     mesh.setVertices(vertices, 0, pivot);
     mesh.getIndicesBuffer().position(0);
-    mesh.render(velocityShader, GL20.GL_TRIANGLES, 0, 3 * QUADS_MAX_COUNT);
-    velocityShader.end();
+    mesh.render(shader, GL20.GL_TRIANGLES, 0, 3 * QUADS_MAX_COUNT);
+    shader.end();
+    Gdx.gl.glDisable(GL20.GL_BLEND);
   }
 
   public void reset() {
