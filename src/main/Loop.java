@@ -33,7 +33,6 @@ public class Loop {
   private final Buffer buffer = new Buffer();
   private final ShaderProgram mixColorWithBlurredEmissive = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/compose.frag");
   private final ShaderProgram showShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/show.frag");
-  private final ShaderProgram flareShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/flare.frag");
   private final ShaderProgram motionBlurShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/motion_blur.frag");
   private final Sharpen sharpen = new Sharpen();
   private final Fxaa fxaa = new Fxaa();
@@ -43,7 +42,6 @@ public class Loop {
   private float elapsedTime;
   private final FrameBuffer colorPlusEmissiveBuffer = FrameBufferCreator.createDefault(WIDTH, HEIGHT);
   private final PingPong pingPong = PingPong.withSize(WIDTH, HEIGHT);
-  private final FrameBuffer emissiveFlares = FrameBufferCreator.createDefault(512, 512);
 
   private static OrthographicCamera createCamera() {
     OrthographicCamera cam = new OrthographicCamera();
