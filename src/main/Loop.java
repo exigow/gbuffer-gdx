@@ -82,7 +82,7 @@ public class Loop {
     Benchmark.end();
 
     Benchmark.start("blur emissive");
-    blurer.blur(gbuffer.emissive, 1);
+    blurer.blur(gbuffer.emissive, 1, 1);
     Benchmark.end();
 
     Benchmark.start("mix color & emissive");

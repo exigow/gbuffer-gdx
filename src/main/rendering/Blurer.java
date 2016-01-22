@@ -20,11 +20,11 @@ public class Blurer {
   public Blurer() {
   }
 
-  public void blur(FrameBuffer source, float factor) {
-    sub512.twoPassBlur(source, factor);
-    sub256.twoPassBlur(sub512.horizontal, factor);
-    sub128.twoPassBlur(sub256.horizontal, factor);
-    sub64.twoPassBlur(sub128.horizontal, factor);
+  public void blur(FrameBuffer source, float factorX, float factorY) {
+    sub512.twoPassBlur(source, factorX, factorY);
+    sub256.twoPassBlur(sub512.horizontal, factorX, factorY);
+    sub128.twoPassBlur(sub256.horizontal, factorX, factorY);
+    sub64.twoPassBlur(sub128.horizontal, factorX, factorY);
     mix(sub512.horizontal, sub256.horizontal, sub128.horizontal, sub64.horizontal, result);
   }
 
@@ -56,9 +56,9 @@ public class Blurer {
       this.shader = shader;
     }
 
-    public void twoPassBlur(FrameBuffer source, float factor) {
-      blur(source, vertical, 1 * factor, 0);
-      blur(vertical, horizontal, 0, 1 * factor);
+    public void twoPassBlur(FrameBuffer source, float factorX, float factorY) {
+      blur(source, vertical, 1 * factorX, 0);
+      blur(vertical, horizontal, 0, 1 * factorY);
     }
 
     private void blur(FrameBuffer from, FrameBuffer to, float x, float y) {
