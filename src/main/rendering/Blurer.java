@@ -1,11 +1,8 @@
 package main.rendering;
 
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import main.rendering.filters.ShaderEffect;
+import main.rendering.postprocess.ShaderEffect;
 import main.rendering.utils.FrameBufferCreator;
-import main.rendering.utils.StaticFullscreenQuad;
-import main.resources.ResourceLoader;
 
 public class Blurer {
 

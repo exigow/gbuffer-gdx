@@ -1,4 +1,4 @@
-package main.rendering.filters;
+package main.rendering.postprocess;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
