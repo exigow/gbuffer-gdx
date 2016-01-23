@@ -55,7 +55,7 @@ public class Benchmark {
 
   private static class Time {
 
-    private static int MAX_AVERAGE_SAMPLES = 60;
+    private static int MAX_AVERAGE_SAMPLES = 16;
     private long time;
     private long prevTimes[] = new long[MAX_AVERAGE_SAMPLES];
     private int pointer = 0;
