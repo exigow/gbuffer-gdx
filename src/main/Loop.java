@@ -35,10 +35,11 @@ public class Loop implements Demo {
   private final ShaderProgram motionBlurShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/motion-blur.frag");
   private final ShaderProgram mixShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/mix-bloom.frag");
   private final Texture background = ResourceLoader.loadTexture("data/textures/back.png");
-  private final SharpenEffect sharpen = new SharpenEffect();
-  private final FxaaEffect fxaa = new FxaaEffect();
-  private final AnamorphicFlares flares = new AnamorphicFlares();
-  private final LuminanceCutoff cutoff = new LuminanceCutoff();
+  private final ShaderEffect sharpen = ShaderEffect.createGeneric("data/screenspace/sharpen.frag");
+  private final ShaderEffect fxaa = ShaderEffect.createGeneric("data/screenspace/fxaa.frag");
+  private final ShaderEffect flares = ShaderEffect.createGeneric("data/screenspace/flare.frag");
+  private final ShaderEffect cutoff = ShaderEffect.createGeneric("data/screenspace/luminance-cutoff.frag");
+  private final ShaderEffect aberration = ShaderEffect.createGeneric("data/screenspace/chromatic-aberration.frag");
   private final MaterialsStock materials = MaterialsStock.loadMaterials();
   private final Blurer blurer = new Blurer();
   private float elapsedTime;
@@ -53,8 +54,6 @@ public class Loop implements Demo {
     cam.setToOrtho(true, WIDTH, HEIGHT);
     return cam;
   }
-
-  private final ChromaticAberrationEffect aberration = new ChromaticAberrationEffect();
 
   @Override
   public void onUpdate(float delta) {
