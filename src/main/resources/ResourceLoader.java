@@ -1,8 +1,18 @@
-package main.utils;
+package main.resources;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import main.utils.Logger;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Map;
 
 public class ResourceLoader {
 
@@ -20,6 +30,22 @@ public class ResourceLoader {
     texture.setFilter(filter, filter);
     Logger.log("Texture loaded succesfully (path: " + texturePath + ")");
     return texture;
+  }
+
+  public static JsonObject loadJson(String path) {
+    Reader reader = pathToReader(path);
+    JsonParser parser = new JsonParser();
+    JsonObject json = parser.parse(reader).getAsJsonObject();
+    Logger.log("JSON loaded succesfully (path: " + path + ")");
+    return json;
+  }
+
+  private static Reader pathToReader(String path) {
+    try {
+      return new FileReader(Gdx.files.internal(path).file());
+    } catch (FileNotFoundException e) {
+      throw new RuntimeException(e);
+    }
   }
 
 }

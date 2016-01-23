@@ -11,7 +11,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import main.rendering.Blurer;
 import main.rendering.utils.FrameBufferCreator;
 import main.rendering.utils.StaticFullscreenQuad;
-import main.utils.ResourceLoader;
+import main.resources.ResourceLoader;
 import main.utils.lazyrun.Demo;
 import main.utils.lazyrun.GdxInitializer;
 

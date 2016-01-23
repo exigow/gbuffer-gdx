@@ -1,8 +1,8 @@
-package main.rendering;
+package main.resources;
 
 import com.badlogic.gdx.graphics.Texture;
 
-public class GBufferTexture {
+public class Material {
 
   public Texture color;
   public Texture emissive;

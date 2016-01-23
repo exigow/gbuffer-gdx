@@ -6,19 +6,18 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import main.debug.Benchmark;
 import main.rendering.Blurer;
 import main.rendering.Buffer;
 import main.rendering.GBuffer;
-import main.rendering.GBufferTexture;
+import main.resources.Material;
 import main.rendering.filters.*;
 import main.rendering.utils.FrameBufferCreator;
 import main.rendering.utils.StaticFullscreenQuad;
+import main.resources.MaterialsStock;
 import main.utils.Logger;
-import main.utils.ResourceLoader;
-import main.utils.lazyrun.Demo;
+import main.resources.ResourceLoader;
 
 import static com.badlogic.gdx.math.MathUtils.lerp;
 import static com.badlogic.gdx.math.MathUtils.sin;
@@ -40,7 +39,7 @@ public class Loop {
   private final AnamorphicFlares flares = new AnamorphicFlares();
   private final ChromaticAberration aberration = new ChromaticAberration();
   private final LuminanceCutoff cutoff = new LuminanceCutoff();
-  private final GBufferTexture gBufferTexture = loadTestGBufferTexture();
+  private final MaterialsStock materials = MaterialsStock.loadMaterials();
   private final Blurer blurer = new Blurer();
   private float elapsedTime;
   private final FrameBuffer colorPlusEmissiveBuffer = FrameBufferCreator.createDefault(WIDTH, HEIGHT);
@@ -54,22 +53,12 @@ public class Loop {
     return cam;
   }
 
-  private static GBufferTexture loadTestGBufferTexture() {
-    GBufferTexture texture = new GBufferTexture();
-    texture.color = ResourceLoader.loadTexture("data/textures/ship-color.png");
-    texture.emissive = ResourceLoader.loadTexture("data/textures/ship-emissive.png");
-    return texture;
-  }
-
   public void onUpdate(float delta) {
     elapsedTime += delta;
 
     Benchmark.start("painting gbuffer");
     buffer.updateProjection(camera.combined);
-    //renderRotatedQuad(WIDTH / 2, HEIGHT / 2, -elapsedTime, 512);
-    //renderRotatedQuad(256, 256, elapsedTime * 16, 256);
     renderRotatedQuad(768, 512, elapsedTime * .125f, 256 + sin(elapsedTime * 32) * 128);
-    //renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 2) * .5f), 256, elapsedTime * 4, 128);
     renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 3) * .5f), 256, 0, 256);
     renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 4) * .5f), 512, -elapsedTime * 12, 256);
     renderRotatedQuad(Gdx.input.getX(), Gdx.input.getY(), elapsedTime, 256);
@@ -80,18 +69,18 @@ public class Loop {
     showShader.setUniformi("u_texture", 0);
     StaticFullscreenQuad.renderUsing(showShader);
     showShader.end();
-    buffer.paintColor(gBufferTexture.color);
+    buffer.paintColor(materials.get("ship").color);
     gbuffer.color.end();
 
     gbuffer.emissive.begin();
     clearContext();
-    buffer.paintEmissive(gBufferTexture.emissive);
+    buffer.paintEmissive(materials.get("ship").emissive);
     gbuffer.emissive.end();
 
     gbuffer.velocity.begin();
     Gdx.gl20.glClearColor(.5f, .5f, 0, 1);
     Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
-    buffer.paintVelocity(gBufferTexture.color);
+    buffer.paintVelocity(materials.get("ship").color);
     gbuffer.velocity.end();
     buffer.reset();
     Benchmark.end();

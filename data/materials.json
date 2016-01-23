@@ -2,17 +2,17 @@
   "materials": [
     {
       "name": "wall",
-      "color": "wall-color.png",
-      "emissive": "wall-emissive.png"
+      "color": "data/textures/wall-color.png",
+      "emissive": "data/textures/wall-emissive.png"
     },
     {
       "name": "ship",
-      "color": "ship-color.png",
-      "emissive": "ship-emissive.png"
+      "color": "data/textures/ship-color.png",
+      "emissive": "data/textures/ship-emissive.png"
     },
     {
       "name": "no-emissive-test",
-      "color": "test.png",
+      "color": "data/textures/test.png",
       "emissive": null
     }
   ]

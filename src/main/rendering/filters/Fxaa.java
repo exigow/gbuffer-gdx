@@ -3,7 +3,7 @@ package main.rendering.filters;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import main.rendering.utils.StaticFullscreenQuad;
-import main.utils.ResourceLoader;
+import main.resources.ResourceLoader;
 
 public class Fxaa {
 
