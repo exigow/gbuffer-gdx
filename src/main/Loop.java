@@ -47,7 +47,6 @@ public class Loop {
   private final PingPong pingPong = PingPong.withSize(WIDTH, HEIGHT);
   private final FrameBuffer cutoffBuffer = FrameBufferCreator.createDefault(512, 512);
   private final FrameBuffer bloomBuffer = FrameBufferCreator.createDefault(512, 512);
-  //private final ShapeRenderer shape = new ShapeRenderer();
 
   private static OrthographicCamera createCamera() {
     OrthographicCamera cam = new OrthographicCamera();
@@ -63,7 +62,6 @@ public class Loop {
   }
 
   public void onUpdate(float delta) {
-    //shape.setProjectionMatrix(camera.combined);
     elapsedTime += delta;
 
     Benchmark.start("storing vertex buffer");
@@ -88,9 +86,6 @@ public class Loop {
     gbuffer.emissive.begin();
     clearContext();
     buffer.paintEmissive(gBufferTexture.emissive);
-    //shape.begin(ShapeRenderer.ShapeType.Filled);
-    //shape.circle(Gdx.input.getX(), Gdx.input.getY(), 32);
-    //shape.end();
     gbuffer.emissive.end();
 
     gbuffer.velocity.begin();

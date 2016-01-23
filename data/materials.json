@@ -1,0 +1,19 @@
+{
+  "materials": [
+    {
+      "name": "wall",
+      "color": "wall-color.png",
+      "emissive": "wall-emissive.png"
+    },
+    {
+      "name": "ship",
+      "color": "ship-color.png",
+      "emissive": "ship-emissive.png"
+    },
+    {
+      "name": "no-emissive-test",
+      "color": "test.png",
+      "emissive": null
+    }
+  ]
+}
