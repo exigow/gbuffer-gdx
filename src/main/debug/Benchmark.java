@@ -1,64 +1,79 @@
 package main.debug;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Benchmark {
 
   private final static double NANOSECONDS_TO_MILISECONDS = 1_000_000;
-  private final static List<Task> TASKS = new ArrayList<>();
-  private static Task ACTUAL_TASK;
-  private static long startTime;
+  private static String ACTUAL_TASK;
+  private static long START_TIME;
+  private static Map<String, Time> TIMES = new LinkedHashMap<>();
 
-  public static void start(String description) {
+  private static Time get(String name) {
+    Time ref = TIMES.get(name);
+    if (ref == null) {
+      ref = new Time();
+      TIMES.put(name, ref);
+    }
+    return ref;
+  }
+
+  public static void start(String name) {
     if (ACTUAL_TASK != null)
-      throw new IllegalStateException("Task " + ACTUAL_TASK.description + " not ended");
-    ACTUAL_TASK = new Task();
-    ACTUAL_TASK.description = description;
-    startTime = now();
+      throw new IllegalStateException("Task " + name + " not ended");
+    ACTUAL_TASK = name;
+    START_TIME = now();
   }
 
   public static void end() {
     if (ACTUAL_TASK == null)
       throw new IllegalStateException("No task in progress");
-    ACTUAL_TASK.time = now() - startTime;
-    TASKS.add(ACTUAL_TASK);
+    get(ACTUAL_TASK).updateTime(now() - START_TIME);
     ACTUAL_TASK = null;
   }
 
-  private static String formatTask(Task task) {
-    double executionTime = (double) task.time / NANOSECONDS_TO_MILISECONDS;
-    return task.description + " " + String.format("%.2fms", executionTime);
+  private static String formatTask(String key) {
+    Time time = get(key);
+    long averageTime = time.getAverageTime();
+    return key + "(avg: " + toMs(averageTime) + ")";
+  }
+
+  private static String toMs(long val) {
+    double asDoubleMs = (double) val / NANOSECONDS_TO_MILISECONDS;
+    return String.format("%.2fms", asDoubleMs);
   }
 
   public static String generateRaportAndReset() {
-    Task total = new Task();
-    total.description = "total";
-    total.time = calcTotalTime();
-    TASKS.add(total);
-    String report = TASKS.stream().map(Benchmark::formatTask).collect(Collectors.joining(" -> "));
-    TASKS.clear();
-    return report;
-  }
-
-  private static long calcTotalTime() {
-    long result = 0;
-    for (Task t : TASKS)
-      result += t.time;
-    return result;
+    return TIMES.keySet().stream().map(Benchmark::formatTask).collect(Collectors.joining(" -> "));
   }
 
   private static long now() {
     return System.nanoTime();
   }
 
-  private static class Task {
+  private static class Time {
 
-    public String description;
-    public long time;
+    private static int MAX_AVERAGE_SAMPLES = 60;
+    private long time;
+    private long prevTimes[] = new long[MAX_AVERAGE_SAMPLES];
+    private int pointer = 0;
+
+    public void updateTime(long to) {
+      prevTimes[pointer++] = time;
+      if (pointer >= MAX_AVERAGE_SAMPLES)
+        pointer = 0;
+      time = to;
+    }
+
+    public long getAverageTime() {
+      long result = 0;
+      for (long prevTime : prevTimes)
+        result += prevTime;
+      return result / MAX_AVERAGE_SAMPLES;
+    }
 
   }
-
 
 }
