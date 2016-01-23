@@ -30,16 +30,16 @@ public class Loop implements Demo {
   private final GBuffer gbuffer = GBuffer.withSize(WIDTH, HEIGHT);
   private final OrthographicCamera camera = createCamera();
   private final Buffer buffer = new Buffer();
-  private final ShaderProgram mixColorWithBlurredEmissive = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/compose.frag");
   private final ShaderProgram showShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/show.frag");
-  private final ShaderProgram motionBlurShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/motion-blur.frag");
-  private final ShaderProgram mixShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/mix-bloom.frag");
   private final Texture background = ResourceLoader.loadTexture("data/textures/back.png");
+  private final ShaderEffect mixColorAndEmissive = ShaderEffect.createGeneric("data/screenspace/compose.frag");
   private final ShaderEffect sharpen = ShaderEffect.createGeneric("data/screenspace/sharpen.frag");
   private final ShaderEffect fxaa = ShaderEffect.createGeneric("data/screenspace/fxaa.frag");
   private final ShaderEffect flares = ShaderEffect.createGeneric("data/screenspace/flare.frag");
   private final ShaderEffect cutoff = ShaderEffect.createGeneric("data/screenspace/luminance-cutoff.frag");
   private final ShaderEffect aberration = ShaderEffect.createGeneric("data/screenspace/chromatic-aberration.frag");
+  private final ShaderEffect motionBlur = ShaderEffect.createGeneric("data/screenspace/motion-blur.frag");
+  private final ShaderEffect mix = ShaderEffect.createGeneric("data/screenspace/mix-bloom.frag");
   private final MaterialsStock materials = MaterialsStock.loadMaterials();
   private final Blurer blurer = new Blurer();
   private float elapsedTime;
@@ -93,28 +93,18 @@ public class Loop implements Demo {
     Benchmark.end();
 
     Benchmark.start("mix color & emissive");
-    colorPlusEmissiveBuffer.begin();
-    gbuffer.color.getColorBufferTexture().bind(0);
-    blurer.getResult().getColorBufferTexture().bind(1);
-    mixColorWithBlurredEmissive.begin();
-    mixColorWithBlurredEmissive.setUniformi("u_texture_color", 0);
-    mixColorWithBlurredEmissive.setUniformi("u_texture_emissive", 1);
-    StaticFullscreenQuad.renderUsing(mixColorWithBlurredEmissive);
-    mixColorWithBlurredEmissive.end();
-    colorPlusEmissiveBuffer.end();
+    mixColorAndEmissive.renderTo(colorPlusEmissiveBuffer)
+      .bind("u_texture_color", 0, gbuffer.color)
+      .bind("u_texture_emissive", 1, blurer.getResult())
+      .flush();
     Benchmark.end();
 
     Benchmark.start("motion blur");
-    colorPlusEmissiveBuffer.getColorBufferTexture().bind(0);
-    gbuffer.velocity.getColorBufferTexture().bind(1);
-    pingPong.first.begin();
-    motionBlurShader.begin();
-    motionBlurShader.setUniformi("u_texture_source", 0);
-    motionBlurShader.setUniformi("u_texture_velocity", 1);
-    motionBlurShader.setUniformf("texel", 1f / HEIGHT);
-    StaticFullscreenQuad.renderUsing(motionBlurShader);
-    motionBlurShader.end();
-    pingPong.first.end();
+    motionBlur.renderTo(pingPong.first)
+      .bind("u_texture_source", 0, colorPlusEmissiveBuffer)
+      .bind("u_texture_velocity", 1, gbuffer.velocity)
+      .paramterize("texel", 1f / HEIGHT)
+      .flush();
     Benchmark.end();
 
     Benchmark.start("luma cutoff");
@@ -131,15 +121,10 @@ public class Loop implements Demo {
     Benchmark.end();
 
     Benchmark.start("add flares");
-    pingPong.second.begin();
-    pingPong.first.getColorBufferTexture().bind(0);
-    bloomBuffer.getColorBufferTexture().bind(1);
-    mixShader.begin();
-    mixShader.setUniformi("u_texture_base", 0);
-    mixShader.setUniformi("u_texture_bloom", 1);
-    StaticFullscreenQuad.renderUsing(mixShader);
-    mixShader.end();
-    pingPong.second.end();
+    mix.renderTo(pingPong.second)
+      .bind("u_texture_base", 0, pingPong.first)
+      .bind("u_texture_bloom", 1, bloomBuffer)
+      .flush();
     Benchmark.end();
 
     Benchmark.start("abber + fxaa + sharp");
