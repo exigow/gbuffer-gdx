@@ -24,21 +24,36 @@ public class CameraController {
   public void update(float delta) {
     Vector3 movement = calcMovementVectorFromInput().scl(delta);
     target.add(movement);
+    target.z = clamp(target.z, .125f, 4);
     moveEyeToTarget(delta);
     updateOrthographicCameraState();
   }
 
   private static Vector3 calcMovementVectorFromInput() {
     Vector3 result = new Vector3();
+    float planeScale = 256;
+    float zoomScale = 2;
     if (isKey(Input.Keys.A))
-      result.x -= 1;
+      result.x -= planeScale;
     if (isKey(Input.Keys.D))
-      result.x += 1;
+      result.x += planeScale;
     if (isKey(Input.Keys.W))
-      result.y -= 1;
+      result.y -= planeScale;
     if (isKey(Input.Keys.S))
-      result.y += 1;
-    return result.scl(1024);
+      result.y += planeScale;
+    if (isKey(Input.Keys.E))
+      result.z -= zoomScale;
+    if (isKey(Input.Keys.Q))
+      result.z += zoomScale;
+    return result;
+  }
+
+  private static float clamp(float v, float min, float max) {
+    if (v > max)
+      return max;
+    if (v < min)
+      return min;
+    return v;
   }
 
   private static boolean isKey(int key) {
