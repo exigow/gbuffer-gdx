@@ -7,7 +7,7 @@ import main.resources.MaterialsStock;
 
 public class GBufferFiller {
 
-  public static void fill(Buffer buffer, GBuffer gbuffer, MaterialsStock materials, RenderTextureUtility show) {
+  public static void fill(VertexBuffer buffer, GBuffer gbuffer, MaterialsStock materials, RenderTextureUtility show) {
     gbuffer.color.begin();
     clearContext(0, 0, 0);
     show.show(materials.get("back").color);
