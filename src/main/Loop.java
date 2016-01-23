@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
 import main.debug.Benchmark;
+import main.logging.Log;
 import main.rendering.Blurer;
 import main.rendering.Buffer;
 import main.rendering.GBuffer;
@@ -15,7 +16,6 @@ import main.rendering.filters.*;
 import main.rendering.utils.FrameBufferCreator;
 import main.rendering.utils.StaticFullscreenQuad;
 import main.resources.MaterialsStock;
-import main.logging.Log;
 import main.resources.ResourceLoader;
 import main.runner.Demo;
 import main.runner.GdxInitializer;
@@ -35,10 +35,9 @@ public class Loop implements Demo {
   private final ShaderProgram motionBlurShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/motion-blur.frag");
   private final ShaderProgram mixShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/mix-bloom.frag");
   private final Texture background = ResourceLoader.loadTexture("data/textures/back.png");
-  private final Sharpen sharpen = new Sharpen();
-  private final Fxaa fxaa = new Fxaa();
+  private final SharpenEffect sharpen = new SharpenEffect();
+  private final FxaaEffect fxaa = new FxaaEffect();
   private final AnamorphicFlares flares = new AnamorphicFlares();
-  private final ChromaticAberration aberration = new ChromaticAberration();
   private final LuminanceCutoff cutoff = new LuminanceCutoff();
   private final MaterialsStock materials = MaterialsStock.loadMaterials();
   private final Blurer blurer = new Blurer();
@@ -47,12 +46,15 @@ public class Loop implements Demo {
   private final PingPong pingPong = PingPong.withSize(WIDTH, HEIGHT);
   private final FrameBuffer cutoffBuffer = FrameBufferCreator.createDefault(512, 512);
   private final FrameBuffer bloomBuffer = FrameBufferCreator.createDefault(512, 512);
+  private final Texture lensDirt = ResourceLoader.loadTexture("data/textures/lens-dirt.png");
 
   private static OrthographicCamera createCamera() {
     OrthographicCamera cam = new OrthographicCamera();
     cam.setToOrtho(true, WIDTH, HEIGHT);
     return cam;
   }
+
+  private final ChromaticAberrationEffect aberration = new ChromaticAberrationEffect();
 
   @Override
   public void onUpdate(float delta) {
@@ -117,11 +119,16 @@ public class Loop implements Demo {
     Benchmark.end();
 
     Benchmark.start("luma cutoff");
-    cutoff.apply(pingPong.first, cutoffBuffer);
+    cutoff.renderTo(cutoffBuffer)
+      .bind("u_texture", 0, pingPong.first)
+      .flush();
     Benchmark.end();
 
     Benchmark.start("flares");
-    flares.apply(cutoffBuffer, bloomBuffer);
+    flares.renderTo(bloomBuffer)
+      .bind("u_texture", 0, cutoffBuffer)
+      .bind("u_texture_lens_dirt", 1, lensDirt)
+      .flush();
     Benchmark.end();
 
     Benchmark.start("add flares");
@@ -137,9 +144,21 @@ public class Loop implements Demo {
     Benchmark.end();
 
     Benchmark.start("abber + fxaa + sharp");
-    aberration.apply(pingPong.second, pingPong.first);
-    fxaa.apply(pingPong.first, pingPong.second);
-    sharpen.apply(pingPong.second, pingPong.first);
+    aberration.renderTo(pingPong.first)
+      .bind("u_texture", 0, pingPong.second)
+      .paramterize("texel", 1f / WIDTH, 1f / HEIGHT)
+      .flush();
+    fxaa.renderTo(pingPong.second)
+      .bind("u_texture", 0, pingPong.first)
+      .paramterize("FXAA_REDUCE_MIN", 1f / 128f)
+      .paramterize("FXAA_REDUCE_MUL", 1f / 8f)
+      .paramterize("FXAA_SPAN_MAX", 8f)
+      .paramterize("texel", 1f / WIDTH, 1f / HEIGHT)
+      .flush();
+    sharpen.renderTo(pingPong.first)
+      .bind("u_texture", 0, pingPong.second)
+      .paramterize("texel", 1f / WIDTH, 1f / HEIGHT)
+      .flush();
     Benchmark.end();
 
     show(pingPong.first);

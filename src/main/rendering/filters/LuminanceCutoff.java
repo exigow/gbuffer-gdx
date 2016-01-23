@@ -1,22 +1,15 @@
 package main.rendering.filters;
 
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import main.rendering.utils.StaticFullscreenQuad;
 import main.resources.ResourceLoader;
 
-public class LuminanceCutoff {
+public class LuminanceCutoff extends ShaderEffect {
 
   private final ShaderProgram shader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/luminance-cutoff.frag");
 
-  public void apply(FrameBuffer from, FrameBuffer to) {
-    to.begin();
-    from.getColorBufferTexture().bind(0);
-    shader.begin();
-    shader.setUniformi("u_texture", 0);
-    StaticFullscreenQuad.renderUsing(shader);
-    shader.end();
-    to.end();
+  @Override
+  protected ShaderProgram getShader() {
+    return shader;
   }
 
 }

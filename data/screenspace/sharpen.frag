@@ -1,7 +1,6 @@
 uniform sampler2D u_texture;
 varying vec2 v_texCoords;
-
-const vec2 texel = vec2(1.0 / 1280, 1.0 / 960);
+uniform vec2 texel;
 
 const float kernel[9] = {
     0, -1, 0,
