@@ -7,7 +7,7 @@ import main.utils.ResourceLoader;
 
 public class ChromaticAberration {
 
-  private final ShaderProgram shader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/chromatic_aberration.frag");
+  private final ShaderProgram shader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/chromatic-aberration.frag");
 
   public void apply(FrameBuffer from, FrameBuffer to) {
     to.begin();
