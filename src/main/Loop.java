@@ -12,7 +12,7 @@ import main.logging.Log;
 import main.rendering.Blurer;
 import main.rendering.Buffer;
 import main.rendering.GBuffer;
-import main.rendering.filters.*;
+import main.rendering.filters.ShaderEffect;
 import main.rendering.utils.FrameBufferCreator;
 import main.rendering.utils.StaticFullscreenQuad;
 import main.resources.MaterialsStock;
@@ -44,7 +44,8 @@ public class Loop implements Demo {
   private final Blurer blurer = new Blurer();
   private float elapsedTime;
   private final FrameBuffer colorPlusEmissiveBuffer = FrameBufferCreator.createDefault(WIDTH, HEIGHT);
-  private final PingPong pingPong = PingPong.withSize(WIDTH, HEIGHT);
+  private final FrameBuffer firstTempBuffer = FrameBufferCreator.createDefault(WIDTH, HEIGHT);
+  private final FrameBuffer secondTempBuffer = FrameBufferCreator.createDefault(WIDTH, HEIGHT);
   private final FrameBuffer cutoffBuffer = FrameBufferCreator.createDefault(512, 512);
   private final FrameBuffer bloomBuffer = FrameBufferCreator.createDefault(512, 512);
   private final Texture lensDirt = ResourceLoader.loadTexture("data/textures/lens-dirt.png");
@@ -100,7 +101,7 @@ public class Loop implements Demo {
     Benchmark.end();
 
     Benchmark.start("motion blur");
-    motionBlur.renderTo(pingPong.first)
+    motionBlur.renderTo(firstTempBuffer)
       .bind("u_texture_source", 0, colorPlusEmissiveBuffer)
       .bind("u_texture_velocity", 1, gbuffer.velocity)
       .paramterize("texel", 1f / HEIGHT)
@@ -109,7 +110,7 @@ public class Loop implements Demo {
 
     Benchmark.start("luma cutoff");
     cutoff.renderTo(cutoffBuffer)
-      .bind("u_texture", 0, pingPong.first)
+      .bind("u_texture", 0, firstTempBuffer)
       .flush();
     Benchmark.end();
 
@@ -121,22 +122,22 @@ public class Loop implements Demo {
     Benchmark.end();
 
     Benchmark.start("add flares");
-    mix.renderTo(pingPong.second)
-      .bind("u_texture_base", 0, pingPong.first)
+    mix.renderTo(secondTempBuffer)
+      .bind("u_texture_base", 0, firstTempBuffer)
       .bind("u_texture_bloom", 1, bloomBuffer)
       .flush();
     Benchmark.end();
 
     Benchmark.start("abberation");
-    aberration.renderTo(pingPong.first)
-      .bind("u_texture", 0, pingPong.second)
+    aberration.renderTo(firstTempBuffer)
+      .bind("u_texture", 0, secondTempBuffer)
       .paramterize("texel", 1f / WIDTH, 1f / HEIGHT)
       .flush();
     Benchmark.end();
 
     Benchmark.start("fxaa");
-    fxaa.renderTo(pingPong.second)
-      .bind("u_texture", 0, pingPong.first)
+    fxaa.renderTo(secondTempBuffer)
+      .bind("u_texture", 0, firstTempBuffer)
       .paramterize("FXAA_REDUCE_MIN", 1f / 128f)
       .paramterize("FXAA_REDUCE_MUL", 1f / 8f)
       .paramterize("FXAA_SPAN_MAX", 8f)
@@ -145,13 +146,13 @@ public class Loop implements Demo {
     Benchmark.end();
 
     Benchmark.start("sharpen");
-    sharpen.renderTo(pingPong.first)
-      .bind("u_texture", 0, pingPong.second)
+    sharpen.renderTo(firstTempBuffer)
+      .bind("u_texture", 0, secondTempBuffer)
       .paramterize("texel", 1f / WIDTH, 1f / HEIGHT)
       .flush();
     Benchmark.end();
 
-    show(pingPong.first);
+    show(firstTempBuffer);
 
     Log.log(Gdx.graphics.getFramesPerSecond() + " " + Benchmark.generateRaportAndReset());
   }
