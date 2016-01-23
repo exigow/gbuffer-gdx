@@ -1,4 +1,4 @@
-package main.utils.lazyrun;
+package main.runner;
 
 public interface Demo {
 

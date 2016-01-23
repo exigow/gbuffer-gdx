@@ -1,4 +1,4 @@
-package main.utils.lazyrun;
+package main.runner;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;

@@ -12,8 +12,8 @@ import main.rendering.Blurer;
 import main.rendering.utils.FrameBufferCreator;
 import main.rendering.utils.StaticFullscreenQuad;
 import main.resources.ResourceLoader;
-import main.utils.lazyrun.Demo;
-import main.utils.lazyrun.GdxInitializer;
+import main.runner.Demo;
+import main.runner.GdxInitializer;
 
 import static com.badlogic.gdx.math.MathUtils.sin;
 import static java.lang.Math.min;
