@@ -54,7 +54,7 @@ public class Loop implements Demo {
     renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 4) * .5f), 512, -elapsedTime * 12, 256);
     renderRotatedQuad(Gdx.input.getX(), Gdx.input.getY(), elapsedTime, 256);
     gbuffer.color.begin();
-    clearContext();
+    clearContext(0, 0, 0);
     background.bind(0);
     showShader.begin();
     showShader.setUniformi("u_texture", 0);
@@ -64,13 +64,12 @@ public class Loop implements Demo {
     gbuffer.color.end();
 
     gbuffer.emissive.begin();
-    clearContext();
+    clearContext(0, 0, 0);
     buffer.paintEmissive(materials.get("ship").emissive);
     gbuffer.emissive.end();
 
     gbuffer.velocity.begin();
-    Gdx.gl20.glClearColor(.5f, .5f, 0, 1);
-    Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    clearContext(.5f, .5f, 0);
     buffer.paintVelocity(materials.get("ship").color);
     gbuffer.velocity.end();
     buffer.reset();
@@ -90,8 +89,8 @@ public class Loop implements Demo {
     showShader.end();
   }
 
-  private static void clearContext() {
-    Gdx.gl20.glClearColor(0, 0, 0, 1);
+  private static void clearContext(float r, float g, float b) {
+    Gdx.gl20.glClearColor(r, g, b, 1);
     Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
   }
 
