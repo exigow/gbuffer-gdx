@@ -41,7 +41,7 @@ public class Loop {
   private final ChromaticAberration aberration = new ChromaticAberration();
   private final LuminanceCutoff cutoff = new LuminanceCutoff();
   private final GBufferTexture gBufferTexture = loadTestGBufferTexture();
-  private final Blurer blurer = new Blurer(512);
+  private final Blurer blurer = new Blurer();
   private float elapsedTime;
   private final FrameBuffer colorPlusEmissiveBuffer = FrameBufferCreator.createDefault(WIDTH, HEIGHT);
   private final PingPong pingPong = PingPong.withSize(WIDTH, HEIGHT);
@@ -97,7 +97,7 @@ public class Loop {
     Benchmark.end();
 
     Benchmark.start("blur emissive");
-    blurer.blur(gbuffer.emissive, 1, 0, 0, 1);
+    blurer.blur(gbuffer.emissive);
     Benchmark.end();
 
     Benchmark.start("mix color & emissive");
