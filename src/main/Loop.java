@@ -64,14 +64,14 @@ public class Loop {
   public void onUpdate(float delta) {
     elapsedTime += delta;
 
-    Benchmark.start("storing vertex buffer");
+    Benchmark.start("painting gbuffer");
     buffer.updateProjection(camera.combined);
     //renderRotatedQuad(WIDTH / 2, HEIGHT / 2, -elapsedTime, 512);
-    renderRotatedQuad(256, 256, elapsedTime * 16, 256);
-    renderRotatedQuad(1024, 512, elapsedTime * .125f, 256 + sin(elapsedTime * 32) * 128);
-    renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 2) * .5f), 256, elapsedTime * 4, 128);
-    renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 3) * .5f), 768, elapsedTime * 8, 256);
-    renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 4) * .5f), 512, -elapsedTime * 12, 192);
+    //renderRotatedQuad(256, 256, elapsedTime * 16, 256);
+    renderRotatedQuad(768, 512, elapsedTime * .125f, 256 + sin(elapsedTime * 32) * 128);
+    //renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 2) * .5f), 256, elapsedTime * 4, 128);
+    renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 3) * .5f), 256, 0, 256);
+    renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 4) * .5f), 512, -elapsedTime * 12, 256);
     renderRotatedQuad(Gdx.input.getX(), Gdx.input.getY(), elapsedTime, 256);
     gbuffer.color.begin();
     clearContext();
