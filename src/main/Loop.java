@@ -11,12 +11,11 @@ import main.debug.Benchmark;
 import main.rendering.Blurer;
 import main.rendering.Buffer;
 import main.rendering.GBuffer;
-import main.resources.Material;
 import main.rendering.filters.*;
 import main.rendering.utils.FrameBufferCreator;
 import main.rendering.utils.StaticFullscreenQuad;
 import main.resources.MaterialsStock;
-import main.utils.Logger;
+import main.logging.Log;
 import main.resources.ResourceLoader;
 
 import static com.badlogic.gdx.math.MathUtils.lerp;
@@ -142,7 +141,7 @@ public class Loop {
 
     show(pingPong.first);
 
-    Logger.log(Gdx.graphics.getFramesPerSecond() + " " + Benchmark.generateRaportAndReset());
+    Log.log(Gdx.graphics.getFramesPerSecond() + " " + Benchmark.generateRaportAndReset());
   }
 
   private void show(FrameBuffer show) {
