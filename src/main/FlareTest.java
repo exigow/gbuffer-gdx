@@ -8,7 +8,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import main.debug.Benchmark;
 import main.rendering.Blurer;
+import main.rendering.filters.LuminanceCutoff;
 import main.rendering.utils.FrameBufferCreator;
 import main.rendering.utils.StaticFullscreenQuad;
 import main.utils.ResourceLoader;
@@ -23,10 +25,8 @@ public class FlareTest implements Demo {
   private final static int WIDTH = 1280;
   private final static int HEIGHT = 768;
   private final FrameBuffer sourceBuffer = FrameBufferCreator.createDefault(WIDTH, HEIGHT);
-  //private final FrameBuffer bufferA = FrameBufferCreator.createDefault(512, 512);
-  //private final FrameBuffer bufferB = FrameBufferCreator.createDefault(512, 512);
-  private final Blurer blurer = new Blurer();
-  //private final ShaderProgram blurShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/gauss_1d_pass_5_lookups.frag");
+  private final Blurer blurer = new Blurer(512);
+  private final Blurer blurerHorizontal = new Blurer(256);
   private final ShaderProgram flareShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/flare.frag");
   private final ShapeRenderer renderer = new ShapeRenderer();
   private final OrthographicCamera camera = createCamera();
@@ -34,6 +34,8 @@ public class FlareTest implements Demo {
   private final static int CENTER_X = WIDTH / 2;
   private final static int CENTER_Y = HEIGHT / 2;
   private float time = 0;
+  private final FrameBuffer cutoffBuffer = FrameBufferCreator.createDefault(512, 512);
+  private final LuminanceCutoff cutoffShader = new LuminanceCutoff();
 
   @Override
   public void onUpdate(float delta) {
@@ -52,15 +54,31 @@ public class FlareTest implements Demo {
     renderer.end();
     sourceBuffer.end();
 
-    blurer.blur(sourceBuffer);
+    Benchmark.start("normal blur");
+    blurer.blur(sourceBuffer, 1, 0, 0, 1);
+    Benchmark.end();
 
+    Benchmark.start("cutoff");
+    cutoffShader.apply(blurer.getResult(), cutoffBuffer);
+    Benchmark.end();
+
+    Benchmark.start("super horizontal blur");
+    blurerHorizontal.blur(cutoffBuffer, 3, 0, 5, 0);
+    Benchmark.end();
+
+    Benchmark.start("flares");
     blurer.getResult().getColorBufferTexture().bind(0);
     lensDirt.bind(1);
+    blurerHorizontal.getResult().getColorBufferTexture().bind(2);
     flareShader.begin();
     flareShader.setUniformi("u_texture", 0);
     flareShader.setUniformi("u_texture_lens_dirt", 1);
+    flareShader.setUniformi("u_texture_flare_horizontal", 2);
     StaticFullscreenQuad.renderUsing(flareShader);
     flareShader.end();
+    Benchmark.end();
+
+    System.out.println(Benchmark.generateRaportAndReset());
   }
 
   private void centeredCircle(float x, float y, float size, Color color) {

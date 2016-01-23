@@ -6,18 +6,20 @@ import main.rendering.utils.FrameBufferCreator;
 import main.rendering.utils.StaticFullscreenQuad;
 import main.utils.ResourceLoader;
 
-import java.util.Arrays;
-
 public class Blurer {
 
-  private static final int SIZE = 512;
   private final ShaderProgram shader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/blur-gauss.frag");
-  private final FrameBuffer vertical = FrameBufferCreator.createDefault(SIZE, SIZE);
-  private final FrameBuffer horizontal = FrameBufferCreator.createDefault(SIZE, SIZE);
+  private final FrameBuffer vertical;
+  private final FrameBuffer horizontal;
 
-  public void blur(FrameBuffer source) {
-    blur(source, vertical, 1, 0);
-    blur(vertical, horizontal, 0, 1);
+  public Blurer(int size) {
+    vertical = FrameBufferCreator.createDefault(size, size);
+    horizontal = FrameBufferCreator.createDefault(size, size);
+  }
+
+  public void blur(FrameBuffer source, float firstX, float firstY, float secondX, float secondY) {
+    blur(source, vertical, firstX, firstY);
+    blur(vertical, horizontal, secondX, secondY);
   }
 
   public FrameBuffer getResult() {
@@ -25,7 +27,7 @@ public class Blurer {
   }
 
   private void blur(FrameBuffer from, FrameBuffer to, float x, float y) {
-    float texel = 1f / SIZE;
+    float texel = 1f / to.getWidth();
     float[] offset = new float[] {texel * x, texel * y};
     to.begin();
     from.getColorBufferTexture().bind(0);
