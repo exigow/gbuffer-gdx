@@ -8,7 +8,7 @@ import main.utils.ResourceLoader;
 
 public class Buffer {
 
-  private final static int MAX_INSTANCES = 1;
+  private final static int MAX_INSTANCES = 8;
   private final Mesh mesh = initialiseEmptyMesh();
   private final float[] vertices = new float[MAX_INSTANCES * 6 * 4];
   private final float[] pvertices = new float[vertices.length];
@@ -31,9 +31,9 @@ public class Buffer {
   }
 
   private static short[] generateQuadIndices() {
-    short[] indices = new short[6];
+    short[] indices = new short[MAX_INSTANCES * 6];
     short j = 0;
-    for (int i = 0; i < 6; i += 6, j += 4) {
+    for (int i = 0; i < indices.length; i += 6, j += 4) {
       indices[i] = j;
       indices[i + 1] = (short) (j + 1);
       indices[i + 2] = (short) (j + 2);
