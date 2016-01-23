@@ -8,12 +8,13 @@ import main.utils.ResourceLoader;
 
 public class Buffer {
 
-  private final static int QUADS_MAX_COUNT = 42;
+  private final static int QUADS_MAX_COUNT = 6;
   private final static int QUADS_MAX_INDICES = QUADS_MAX_COUNT * 6;
   private final Mesh mesh = initialiseEmptyMesh();
   private final float[] vertices = new float[QUADS_MAX_COUNT * 2 * 2];
   private final float[] pvertices = new float[QUADS_MAX_COUNT * 2 * 2];
-  private final ShaderProgram bufferShader = ResourceLoader.loadShader("data/buffer/paint.vert", "data/buffer/paint.frag");
+  private final ShaderProgram colorShader = ResourceLoader.loadShader("data/buffer/color.vert", "data/buffer/color.frag");
+  private final ShaderProgram emissiveShader = ResourceLoader.loadShader("data/buffer/color.vert", "data/buffer/emissive.frag");
   private final ShaderProgram velocityShader = ResourceLoader.loadShader("data/buffer/velocity.vert", "data/buffer/velocity.frag");
   private int pivot = 0;
   private final Matrix4 projectionMatrix = new Matrix4();
@@ -59,11 +60,15 @@ public class Buffer {
   }
 
   public void paintColor(Texture texture) {
-    paint(texture, bufferShader);
+    paint(texture, colorShader);
   }
 
   public void paintVelocity(Texture texture) {
     paint(texture, velocityShader);
+  }
+
+  public void paintEmissive(Texture texture) {
+    paint(texture, emissiveShader);
   }
 
   private void paint(Texture texture, ShaderProgram shader) {

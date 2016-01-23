@@ -33,6 +33,7 @@ public class Loop {
   private final ShaderProgram showShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/show.frag");
   private final ShaderProgram motionBlurShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/motion_blur.frag");
   private final ShaderProgram mixShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/mix-bloom.frag");
+  private final Texture background = ResourceLoader.loadTexture("data/textures/back.jpg");
   private final Sharpen sharpen = new Sharpen();
   private final Fxaa fxaa = new Fxaa();
   private final AnamorphicFlares flares = new AnamorphicFlares();
@@ -64,15 +65,29 @@ public class Loop {
 
     Benchmark.start("storing vertex buffer");
     buffer.updateProjection(camera.combined);
-    renderRotatedQuad(WIDTH / 2, HEIGHT / 2, -elapsedTime, 1024);
+    /*renderRotatedQuad(WIDTH / 2, HEIGHT / 2, -elapsedTime, 1024);
     renderRotatedQuad(256, 256, elapsedTime * 16, 256);
     renderRotatedQuad(1024, 512, elapsedTime * .125f, 256 + sin(elapsedTime * 32) * 128);
     renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 2) * .5f), 256, elapsedTime * 4, 128);
     renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 3) * .5f), 768, elapsedTime * 8, 256);
-    renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 4) * .5f), 512, -elapsedTime * 12, 192);
+    renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 4) * .5f), 512, -elapsedTime * 12, 192);*/
     renderRotatedQuad(Gdx.input.getX(), Gdx.input.getY(), elapsedTime * .125f, 256);
-    fillColor(gbuffer.color, gBufferTexture.color);
-    fillColor(gbuffer.emissive, gBufferTexture.emissive);
+    //fillColor(gbuffer.color, gBufferTexture.color);
+    gbuffer.color.begin();
+    clearContext();
+    background.bind(0);
+    showShader.begin();
+    showShader.setUniformi("u_texture", 0);
+    StaticFullscreenQuad.renderUsing(showShader);
+    showShader.end();
+    buffer.paintColor(gBufferTexture.color);
+    gbuffer.color.end();
+
+    gbuffer.emissive.begin();
+    clearContext();
+    buffer.paintEmissive(gBufferTexture.emissive);
+    gbuffer.emissive.end();
+
     gbuffer.velocity.begin();
     Gdx.gl20.glClearColor(.5f, .5f, 0, 1);
     Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -147,13 +162,6 @@ public class Loop {
     showShader.setUniformi("u_texture", 0);
     StaticFullscreenQuad.renderUsing(showShader);
     showShader.end();
-  }
-
-  private void fillColor(FrameBuffer frameBuffer, Texture texture) {
-    frameBuffer.begin();
-    clearContext();
-    buffer.paintColor(texture);
-    frameBuffer.end();
   }
 
   private static void clearContext() {
