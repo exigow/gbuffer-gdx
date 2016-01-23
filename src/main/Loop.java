@@ -3,7 +3,6 @@ package main;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
-import main.debug.Benchmark;
 import main.rendering.Buffer;
 import main.rendering.GBuffer;
 import main.rendering.GBufferFiller;
@@ -38,7 +37,7 @@ public class Loop implements Demo {
   public void onUpdate(float delta) {
     elapsedTime += delta;
 
-    Benchmark.start("painting gbuffer");
+    //Benchmark.start("painting gbuffer");
     buffer.updateProjection(camera.combined);
     renderRotatedQuad(768, 512, elapsedTime * .125f, 256 + sin(elapsedTime * 32) * 128);
     renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 3) * .5f), 256, 0, 256);
@@ -46,7 +45,7 @@ public class Loop implements Demo {
     renderRotatedQuad(Gdx.input.getX(), Gdx.input.getY(), elapsedTime, 256);
     GBufferFiller.fill(buffer, gbuffer, materials, show);
     buffer.reset();
-    Benchmark.end();
+    //Benchmark.end();
 
     postProcessor.process(gbuffer);
     show.show(postProcessor.getResult());
