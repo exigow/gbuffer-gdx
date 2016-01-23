@@ -20,13 +20,10 @@ import static java.lang.Math.min;
 
 public class FlareTest implements Demo {
 
-  private final static int WIDTH = 1280;
+  private final static int WIDTH = 1024;
   private final static int HEIGHT = 768;
   private final FrameBuffer sourceBuffer = FrameBufferCreator.createDefault(WIDTH, HEIGHT);
-  //private final FrameBuffer bufferA = FrameBufferCreator.createDefault(512, 512);
-  //private final FrameBuffer bufferB = FrameBufferCreator.createDefault(512, 512);
   private final Blurer blurer = new Blurer();
-  //private final ShaderProgram blurShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/gauss_1d_pass_5_lookups.frag");
   private final ShaderProgram flareShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/flare.frag");
   private final ShapeRenderer renderer = new ShapeRenderer();
   private final OrthographicCamera camera = createCamera();

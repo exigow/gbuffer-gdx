@@ -17,14 +17,16 @@ import main.rendering.utils.StaticFullscreenQuad;
 import main.resources.MaterialsStock;
 import main.logging.Log;
 import main.resources.ResourceLoader;
+import main.runner.Demo;
+import main.runner.GdxInitializer;
 
 import static com.badlogic.gdx.math.MathUtils.lerp;
 import static com.badlogic.gdx.math.MathUtils.sin;
 
-public class Loop {
+public class Loop implements Demo {
 
-  private final static int WIDTH = Gdx.graphics.getWidth();
-  private final static int HEIGHT = Gdx.graphics.getHeight();
+  private final static int WIDTH = 1024;
+  private final static int HEIGHT = 768;
   private final GBuffer gbuffer = GBuffer.withSize(WIDTH, HEIGHT);
   private final OrthographicCamera camera = createCamera();
   private final Buffer buffer = new Buffer();
@@ -52,6 +54,7 @@ public class Loop {
     return cam;
   }
 
+  @Override
   public void onUpdate(float delta) {
     elapsedTime += delta;
 
@@ -164,6 +167,10 @@ public class Loop {
     buffer.putVertex(x + sin * scale, y - cos * scale, 1, 0);
     buffer.putVertex(x + cos * scale, y + sin * scale, 1, 1);
     buffer.putVertex(x - sin * scale, y + cos * scale, 0, 1);
+  }
+
+  public static void main(String[] args) {
+    GdxInitializer.initializeLazy(Loop::new);
   }
 
 }

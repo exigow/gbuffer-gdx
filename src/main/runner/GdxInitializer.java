@@ -33,7 +33,7 @@ public class GdxInitializer extends ApplicationAdapter {
 
   private static LwjglApplicationConfiguration createDefaultConfiguration() {
     return new LwjglApplicationConfiguration() {{
-      width = 1280;
+      width = 1024;
       height = 768;
       resizable = false;
     }};
