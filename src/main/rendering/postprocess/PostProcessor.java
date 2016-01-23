@@ -2,7 +2,6 @@ package main.rendering.postprocess;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import main.debug.Benchmark;
 import main.rendering.Blurer;
 import main.rendering.GBuffer;
 import main.rendering.utils.FrameBufferCreator;
@@ -41,53 +40,53 @@ public class PostProcessor {
   }
 
   public void process(GBuffer gbuffer) {
-    Benchmark.start("blur emissive");
+    // Benchmark.start("blur emissive");
     blurer.blur(gbuffer.emissive);
-    Benchmark.end();
+    // Benchmark.end();
 
-    Benchmark.start("mix color & emissive");
+    // Benchmark.start("mix color & emissive");
     mixColorAndEmissive.renderTo(colorPlusEmissiveBuffer)
       .bind("u_texture_color", 0, gbuffer.color)
       .bind("u_texture_emissive", 1, blurer.getResult())
       .flush();
-    Benchmark.end();
+    // Benchmark.end();
 
-    Benchmark.start("motion blur");
+    // Benchmark.start("motion blur");
     motionBlur.renderTo(firstTempBuffer)
       .bind("u_texture_source", 0, colorPlusEmissiveBuffer)
       .bind("u_texture_velocity", 1, gbuffer.velocity)
       .paramterize("texel", 1f / height)
       .flush();
-    Benchmark.end();
+    // Benchmark.end();
 
-    Benchmark.start("luma cutoff");
+    // Benchmark.start("luma cutoff");
     cutoff.renderTo(cutoffBuffer)
       .bind("u_texture", 0, firstTempBuffer)
       .flush();
-    Benchmark.end();
+    // Benchmark.end();
 
-    Benchmark.start("flares");
+    // Benchmark.start("flares");
     flares.renderTo(bloomBuffer)
       .bind("u_texture", 0, cutoffBuffer)
       .bind("u_texture_lens_dirt", 1, lensDirt)
       .flush();
-    Benchmark.end();
+    // Benchmark.end();
 
-    Benchmark.start("add flares");
+    // Benchmark.start("add flares");
     mix.renderTo(secondTempBuffer)
       .bind("u_texture_base", 0, firstTempBuffer)
       .bind("u_texture_bloom", 1, bloomBuffer)
       .flush();
-    Benchmark.end();
+    // Benchmark.end();
 
-    Benchmark.start("abberation");
+    // Benchmark.start("abberation");
     aberration.renderTo(firstTempBuffer)
       .bind("u_texture", 0, secondTempBuffer)
       .paramterize("texel", 1f / width, 1f / height)
       .flush();
-    Benchmark.end();
+    // Benchmark.end();
 
-    Benchmark.start("fxaa");
+    // Benchmark.start("fxaa");
     fxaa.renderTo(secondTempBuffer)
       .bind("u_texture", 0, firstTempBuffer)
       .paramterize("FXAA_REDUCE_MIN", 1f / 128f)
@@ -95,14 +94,14 @@ public class PostProcessor {
       .paramterize("FXAA_SPAN_MAX", 8f)
       .paramterize("texel", 1f / width, 1f / height)
       .flush();
-    Benchmark.end();
+    // Benchmark.end();
 
-    Benchmark.start("sharpen");
+    // Benchmark.start("sharpen");
     sharpen.renderTo(firstTempBuffer)
       .bind("u_texture", 0, secondTempBuffer)
       .paramterize("texel", 1f / width, 1f / height)
       .flush();
-    Benchmark.end();
+    // Benchmark.end();
   }
 
   public Texture getResult() {

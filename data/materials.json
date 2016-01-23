@@ -11,8 +11,8 @@
       "emissive": "data/textures/ship-emissive.png"
     },
     {
-      "name": "no-emissive-test",
-      "color": "data/textures/test.png",
+      "name": "back",
+      "color": "data/textures/back.png",
       "emissive": null
     }
   ]
