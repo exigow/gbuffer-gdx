@@ -14,7 +14,7 @@ const vec3 samples[5] = {
 void main() {
     vec3 result = vec3(0);
     vec2 dir = (.5 - v_texCoords) * texel;
-    dir *= 8; // make it more visible; just tweaks
+    dir *= 4; // make it more visible; just tweaks
     result += texture2D(u_texture, v_texCoords + dir).xyz * samples[0];
     result += texture2D(u_texture, v_texCoords + dir * .5).xyz * samples[1];
     result += texture2D(u_texture, v_texCoords).xyz * samples[2];

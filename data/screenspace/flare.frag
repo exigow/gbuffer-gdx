@@ -15,7 +15,7 @@ float distances[8] = {
 
 vec3 distorted(vec2 uv, vec2 dir) {
     vec3 result = vec3(0);
-    vec2 scale = dir * .025;
+    vec2 scale = dir * .0125;
     result.r += texture2D(u_texture, uv + scale).r;
     result.g += texture2D(u_texture, uv).g;
     result.b += texture2D(u_texture, uv - scale).b;

@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import main.debug.Benchmark;
 import main.rendering.Blurer;
@@ -33,7 +34,7 @@ public class Loop {
   private final ShaderProgram showShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/show.frag");
   private final ShaderProgram motionBlurShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/motion_blur.frag");
   private final ShaderProgram mixShader = ResourceLoader.loadShader("data/screenspace/screenspace.vert", "data/screenspace/mix-bloom.frag");
-  private final Texture background = ResourceLoader.loadTexture("data/textures/back.jpg");
+  private final Texture background = ResourceLoader.loadTexture("data/textures/back.png");
   private final Sharpen sharpen = new Sharpen();
   private final Fxaa fxaa = new Fxaa();
   private final AnamorphicFlares flares = new AnamorphicFlares();
@@ -46,6 +47,7 @@ public class Loop {
   private final PingPong pingPong = PingPong.withSize(WIDTH, HEIGHT);
   private final FrameBuffer cutoffBuffer = FrameBufferCreator.createDefault(512, 512);
   private final FrameBuffer bloomBuffer = FrameBufferCreator.createDefault(512, 512);
+  //private final ShapeRenderer shape = new ShapeRenderer();
 
   private static OrthographicCamera createCamera() {
     OrthographicCamera cam = new OrthographicCamera();
@@ -61,6 +63,7 @@ public class Loop {
   }
 
   public void onUpdate(float delta) {
+    //shape.setProjectionMatrix(camera.combined);
     elapsedTime += delta;
 
     Benchmark.start("storing vertex buffer");
@@ -85,6 +88,9 @@ public class Loop {
     gbuffer.emissive.begin();
     clearContext();
     buffer.paintEmissive(gBufferTexture.emissive);
+    //shape.begin(ShapeRenderer.ShapeType.Filled);
+    //shape.circle(Gdx.input.getX(), Gdx.input.getY(), 32);
+    //shape.end();
     gbuffer.emissive.end();
 
     gbuffer.velocity.begin();
@@ -96,13 +102,13 @@ public class Loop {
     Benchmark.end();
 
     Benchmark.start("blur emissive");
-    blurer.blur(gbuffer.emissive, 1, 1);
+    blurer.blur(gbuffer.emissive);
     Benchmark.end();
 
     Benchmark.start("mix color & emissive");
     colorPlusEmissiveBuffer.begin();
     gbuffer.color.getColorBufferTexture().bind(0);
-    blurer.result.getColorBufferTexture().bind(1);
+    blurer.getResult().getColorBufferTexture().bind(1);
     mixColorWithBlurredEmissive.begin();
     mixColorWithBlurredEmissive.setUniformi("u_texture_color", 0);
     mixColorWithBlurredEmissive.setUniformi("u_texture_emissive", 1);

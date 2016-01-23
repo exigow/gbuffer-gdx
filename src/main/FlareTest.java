@@ -52,9 +52,9 @@ public class FlareTest implements Demo {
     renderer.end();
     sourceBuffer.end();
 
-    blurer.blur(sourceBuffer, 1, 1);
+    blurer.blur(sourceBuffer);
 
-    blurer.result.getColorBufferTexture().bind(0);
+    blurer.getResult().getColorBufferTexture().bind(0);
     lensDirt.bind(1);
     flareShader.begin();
     flareShader.setUniformi("u_texture", 0);

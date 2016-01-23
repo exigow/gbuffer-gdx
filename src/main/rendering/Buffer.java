@@ -8,11 +8,10 @@ import main.utils.ResourceLoader;
 
 public class Buffer {
 
-  private final static int QUADS_MAX_COUNT = 6;
-  private final static int QUADS_MAX_INDICES = QUADS_MAX_COUNT * 6;
+  private final static int MAX_INSTANCES = 1;
   private final Mesh mesh = initialiseEmptyMesh();
-  private final float[] vertices = new float[QUADS_MAX_COUNT * 2 * 2];
-  private final float[] pvertices = new float[QUADS_MAX_COUNT * 2 * 2];
+  private final float[] vertices = new float[MAX_INSTANCES * 6 * 4];
+  private final float[] pvertices = new float[vertices.length];
   private final ShaderProgram colorShader = ResourceLoader.loadShader("data/buffer/color.vert", "data/buffer/color.frag");
   private final ShaderProgram emissiveShader = ResourceLoader.loadShader("data/buffer/color.vert", "data/buffer/emissive.frag");
   private final ShaderProgram velocityShader = ResourceLoader.loadShader("data/buffer/velocity.vert", "data/buffer/velocity.frag");
@@ -25,16 +24,16 @@ public class Buffer {
       new VertexAttribute(VertexAttributes.Usage.Generic, 2, "a_velocity"),
       new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, 2, "a_texCoord0")
     };
-    int maxVertices = QUADS_MAX_COUNT * 4;
-    Mesh mesh = new Mesh(true, maxVertices, QUADS_MAX_INDICES, attributes);
+    int maxVertices = MAX_INSTANCES * 4;
+    Mesh mesh = new Mesh(true, maxVertices, MAX_INSTANCES * 6, attributes);
     mesh.setIndices(generateQuadIndices());
     return mesh;
   }
 
   private static short[] generateQuadIndices() {
-    short[] indices = new short[QUADS_MAX_INDICES];
+    short[] indices = new short[6];
     short j = 0;
-    for (int i = 0; i < QUADS_MAX_INDICES; i += 6, j += 4) {
+    for (int i = 0; i < 6; i += 6, j += 4) {
       indices[i] = j;
       indices[i + 1] = (short) (j + 1);
       indices[i + 2] = (short) (j + 2);
@@ -80,7 +79,7 @@ public class Buffer {
     shader.setUniformi("u_texture", 0);
     mesh.setVertices(vertices, 0, pivot);
     mesh.getIndicesBuffer().position(0);
-    mesh.render(shader, GL20.GL_TRIANGLES, 0, 3 * QUADS_MAX_COUNT);
+    mesh.render(shader, GL20.GL_TRIANGLES, 0, MAX_INSTANCES * 6);
     shader.end();
     Gdx.gl.glDisable(GL20.GL_BLEND);
   }
