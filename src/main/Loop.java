@@ -127,11 +127,14 @@ public class Loop implements Demo {
       .flush();
     Benchmark.end();
 
-    Benchmark.start("abber + fxaa + sharp");
+    Benchmark.start("abberation");
     aberration.renderTo(pingPong.first)
       .bind("u_texture", 0, pingPong.second)
       .paramterize("texel", 1f / WIDTH, 1f / HEIGHT)
       .flush();
+    Benchmark.end();
+
+    Benchmark.start("fxaa");
     fxaa.renderTo(pingPong.second)
       .bind("u_texture", 0, pingPong.first)
       .paramterize("FXAA_REDUCE_MIN", 1f / 128f)
@@ -139,6 +142,9 @@ public class Loop implements Demo {
       .paramterize("FXAA_SPAN_MAX", 8f)
       .paramterize("texel", 1f / WIDTH, 1f / HEIGHT)
       .flush();
+    Benchmark.end();
+
+    Benchmark.start("sharpen");
     sharpen.renderTo(pingPong.first)
       .bind("u_texture", 0, pingPong.second)
       .paramterize("texel", 1f / WIDTH, 1f / HEIGHT)
