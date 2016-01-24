@@ -1,0 +1,12 @@
+
+1) animowane buttony:
+    * referencja: tactical-view-homeworld.jpg (remasterka)
+    * patrz na: "objectives recall", "resources"
+    * najpierw pojawiają się horyzontalne linie które się rościągają
+    * dopiero potem pojawia się tekst, a background się podświetla
+
+2) outline jednostek
+    * referencja: "tactical-view-anomaly-2.jpg"
+    * dosłownie identyko; zawsze; jako select może się ziększać
+
+3) trójkąty :* =3 <3
