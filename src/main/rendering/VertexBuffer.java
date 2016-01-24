@@ -11,7 +11,7 @@ public class VertexBuffer {
   private final static int MAX_INSTANCES = 2;
   private final Mesh mesh = initialiseEmptyMesh();
   private final float[] vertices = new float[MAX_INSTANCES * 6 * 4];
-  private final float[] pvertices = new float[vertices.length];
+  //private final float[] pvertices = new float[vertices.length];
   private final ShaderProgram colorShader = ResourceLoader.loadShader("data/buffer/color.vert", "data/buffer/color.frag");
   private final ShaderProgram emissiveShader = ResourceLoader.loadShader("data/buffer/color.vert", "data/buffer/emissive.frag");
   private final ShaderProgram velocityShader = ResourceLoader.loadShader("data/buffer/velocity.vert", "data/buffer/velocity.frag");
@@ -47,8 +47,8 @@ public class VertexBuffer {
   public void putVertex(float x, float y, float u, float v) {
     vertices[pivot] = x;
     vertices[pivot + 1] = y;
-    vertices[pivot + 2] = .5f + (vertices[pivot] - pvertices[pivot]) * .0025f;
-    vertices[pivot + 3] = .5f + (vertices[pivot + 1] - pvertices[pivot + 1]) * .0025f;
+    vertices[pivot + 2] = .5f;//.5f + (vertices[pivot] - pvertices[pivot]) * .0025f;
+    vertices[pivot + 3] = .5f;//.5f + (vertices[pivot + 1] - pvertices[pivot + 1]) * .0025f;
     vertices[pivot + 4] = u;
     vertices[pivot + 5] = v;
     pivot += 6;
@@ -85,7 +85,7 @@ public class VertexBuffer {
   }
 
   public void reset() {
-    System.arraycopy(vertices, 0, pvertices, 0, vertices.length);
+    //System.arraycopy(vertices, 0, pvertices, 0, vertices.length);
     pivot = 0;
   }
 

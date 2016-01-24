@@ -31,7 +31,7 @@ public class CameraController {
 
   private static Vector3 calcMovementVectorFromInput() {
     Vector3 result = new Vector3();
-    float planeScale = 256;
+    float planeScale = 1024;
     float zoomScale = 2;
     if (isKey(Input.Keys.A))
       result.x -= planeScale;
