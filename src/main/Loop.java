@@ -1,10 +1,8 @@
 package main;
 
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import main.camera.CameraController;
 import main.rendering.GBuffer;
-import main.rendering.GBufferFiller;
 import main.rendering.VertexBuffer;
 import main.rendering.postprocess.PostProcessor;
 import main.rendering.utils.RenderTextureUtility;
@@ -24,6 +22,7 @@ public class Loop implements Demo {
   private final RenderTextureUtility show = new RenderTextureUtility();
   private final MaterialsStock materials = MaterialsStock.loadMaterials();
   private final PostProcessor postProcessor = PostProcessor.withSize(WIDTH, HEIGHT);
+  private final UserInterfaceRenderer uiRenderer = UserInterfaceRenderer.withSize(WIDTH, HEIGHT);
   private float elapsedTime;
 
   @Override
@@ -32,20 +31,25 @@ public class Loop implements Demo {
     cameraController.update(delta);
 
     //Benchmark.start("painting gbuffer");
-    buffer.updateProjection(cameraController.matrix());
+    //buffer.updateProjection(cameraController.matrix());
     //renderRotatedQuad(768, 512, elapsedTime * .125f, 256 + sin(elapsedTime * 32) * 128);
     //renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 3) * .5f), 256, 0, 256);
     //renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 4) * .5f), 512, -elapsedTime * 12, 256);
     //renderRotatedQuad(Gdx.input.getX(), Gdx.input.getY(), elapsedTime, 256);
-    renderRotatedQuad(0, 0, 1, 256);
+    /*renderRotatedQuad(0, 0, 1, 256);
     Vector2 mouse = cameraController.unprojectedMouse();
     renderRotatedQuad(mouse.x, mouse.y, elapsedTime, 256);
     GBufferFiller.fill(buffer, gbuffer, materials, show);
-    buffer.reset();
+    buffer.reset();*/
     //Benchmark.end();
 
-    postProcessor.process(gbuffer);
-    show.show(postProcessor.getResult());
+    //postProcessor.process(gbuffer);
+    //show.show(postProcessor.getResult());
+
+    uiRenderer.render(delta);
+
+    show.show(uiRenderer.getResult());
+
 
     //Log.log(Gdx.graphics.getFramesPerSecond() + " " + Benchmark.generateRaportAndReset());
   }
