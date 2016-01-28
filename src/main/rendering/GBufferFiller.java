@@ -23,6 +23,11 @@ public class GBufferFiller {
     clearContext(.5f, .5f, 0);
     buffer.paintVelocity(materials.get("ship").color);
     gbuffer.velocity.end();
+
+    gbuffer.ids.begin();
+    clearContext(0, 0, 0);
+    buffer.paintIds(materials.get("ship").color);
+    gbuffer.ids.end();
   }
 
   private static void clearContext(float r, float g, float b) {

@@ -8,13 +8,14 @@ import main.resources.ResourceLoader;
 
 public class VertexBuffer {
 
-  private final static int MAX_INSTANCES = 2;
+  private final static int MAX_INSTANCES = 4;
   private final Mesh mesh = initialiseEmptyMesh();
-  private final float[] vertices = new float[MAX_INSTANCES * 6 * 4];
+  private final float[] vertices = new float[MAX_INSTANCES * 7 * 4];
   //private final float[] pvertices = new float[vertices.length];
   private final ShaderProgram colorShader = ResourceLoader.loadShader("data/buffer/color.vert", "data/buffer/color.frag");
   private final ShaderProgram emissiveShader = ResourceLoader.loadShader("data/buffer/color.vert", "data/buffer/emissive.frag");
   private final ShaderProgram velocityShader = ResourceLoader.loadShader("data/buffer/velocity.vert", "data/buffer/velocity.frag");
+  private final ShaderProgram idShader = ResourceLoader.loadShader("data/buffer/id.vert", "data/buffer/id.frag");
   private int pivot = 0;
   private final Matrix4 projectionMatrix = new Matrix4();
 
@@ -22,7 +23,8 @@ public class VertexBuffer {
     VertexAttribute[] attributes = new VertexAttribute[] {
       new VertexAttribute(VertexAttributes.Usage.Position, 2, "a_position"),
       new VertexAttribute(VertexAttributes.Usage.Generic, 2, "a_velocity"),
-      new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, 2, "a_texCoord0")
+      new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, 2, "a_texCoord0"),
+      new VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, "a_color")
     };
     int maxVertices = MAX_INSTANCES * 4;
     Mesh mesh = new Mesh(true, maxVertices, MAX_INSTANCES * 6, attributes);
@@ -44,14 +46,15 @@ public class VertexBuffer {
     return indices;
   }
 
-  public void putVertex(float x, float y, float u, float v) {
+  public void putVertex(float x, float y, float u, float v, float color) {
     vertices[pivot] = x;
     vertices[pivot + 1] = y;
     vertices[pivot + 2] = .5f;//.5f + (vertices[pivot] - pvertices[pivot]) * .0025f;
     vertices[pivot + 3] = .5f;//.5f + (vertices[pivot + 1] - pvertices[pivot + 1]) * .0025f;
     vertices[pivot + 4] = u;
     vertices[pivot + 5] = v;
-    pivot += 6;
+    vertices[pivot + 6] = color;
+    pivot += 7;
   }
 
   public void updateProjection(Matrix4 actualized) {
@@ -68,6 +71,10 @@ public class VertexBuffer {
 
   public void paintEmissive(Texture texture) {
     paint(texture, emissiveShader);
+  }
+
+  public void paintIds(Texture texture) {
+    paint(texture, idShader);
   }
 
   private void paint(Texture texture, ShaderProgram shader) {

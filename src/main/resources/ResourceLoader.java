@@ -7,7 +7,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import main.logging.Log;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.Reader;
 
 public class ResourceLoader {
 
@@ -23,6 +25,8 @@ public class ResourceLoader {
     Texture texture = new Texture(Gdx.files.internal(texturePath));
     Texture.TextureFilter filter = Texture.TextureFilter.Linear;
     texture.setFilter(filter, filter);
+    Texture.TextureWrap wrap = Texture.TextureWrap.Repeat;
+    texture.setWrap(wrap, wrap);
     Log.log("Texture loaded succesfully (path: " + texturePath + ")");
     return texture;
   }

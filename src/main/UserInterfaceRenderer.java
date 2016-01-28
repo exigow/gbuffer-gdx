@@ -65,6 +65,15 @@ public class UserInterfaceRenderer {
     buffer.end();
   }
 
+  private void renderQuad(float x1, float y1, float x2, float y2, float x3, float y3) {
+    renderer.color(1, 1, 1, 1);
+    renderer.vertex(0, 0, 0);
+    renderer.color(1, 1, 1, 1);
+    renderer.vertex(128, 0, 0);
+    renderer.color(1, 1, 1, 1);
+    renderer.vertex(0, 128, 0);
+  }
+
   /*private void renderButtonAnimation(Button button) {
     Rectangle rect = button.rect;
     renderBar(button, 0);

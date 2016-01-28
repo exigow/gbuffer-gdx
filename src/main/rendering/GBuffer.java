@@ -8,11 +8,13 @@ public class GBuffer {
   public final FrameBuffer color;
   public final FrameBuffer emissive;
   public final FrameBuffer velocity;
+  public final FrameBuffer ids;
 
   private GBuffer(int width, int height) {
     color = FrameBufferCreator.createDefault(width, height);
     emissive = FrameBufferCreator.createDefault(512, 512);
     velocity = FrameBufferCreator.createDefault(128, 128);
+    ids = FrameBufferCreator.createDefault(512, 512);
   }
 
   public static GBuffer withSize(int width, int heigth) {

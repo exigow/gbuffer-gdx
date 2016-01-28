@@ -14,6 +14,11 @@
       "name": "back",
       "color": "data/textures/back.png",
       "emissive": null
+    },
+    {
+      "name": "pattern",
+      "color": "data/textures/pattern.png",
+      "emissive": null
     }
   ]
 }
