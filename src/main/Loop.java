@@ -44,11 +44,13 @@ public class Loop implements Demo {
     //renderRotatedQuad(MathUtils.lerp(-256, 256, .5f + sin(elapsedTime * 3) * .5f), 256, 0, 256, Color.BLUE);
     //renderRotatedQuad(lerp(256, WIDTH - 256, .5f + sin(elapsedTime * 4) * .5f), 512, -elapsedTime * 12, 256);
     //renderRotatedQuad(Gdx.input.getX(), Gdx.input.getY(), elapsedTime, 256);
-    //renderRotatedQuad(-128, 0, 1, 256, new Color(0, 0, .5f + sin(elapsedTime) * .5f, 1));
     Color red = new Color(1f, .5f, .125f, 1f);
     renderRotatedQuad(-128, 0, -elapsedTime, 256, red);
     Color blue = new Color(.125f, .5f, 1f, 1f);
     renderRotatedQuad(128, 0, elapsedTime, 256, blue);
+    Color fade = new Color(blue);
+    fade.a = .5f + sin(elapsedTime * 4) * .5f;
+    renderRotatedQuad(256, 0, 1, 256, fade);
     Vector2 mouse = cameraController.unprojectedMouse();
     renderRotatedQuad(mouse.x, mouse.y, 0, 256, blue);
     GBufferFiller.fill(buffer, gbuffer, materials, show);
