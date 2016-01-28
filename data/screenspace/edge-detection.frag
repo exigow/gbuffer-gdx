@@ -12,6 +12,7 @@ void main() {
     vec4 horizEdge = diff(vec2(1.0 / 512, 0));
     vec4 vertEdge =  diff(vec2(0, 1.0 / 512));
     vec3 mid = texture2D( u_texture, v_texCoords.xy).rgb;
+    vec3 overlay = mid * .25;
     vec3 edge = sqrt((horizEdge.rgb * horizEdge.rgb) + (vertEdge.rgb * vertEdge.rgb)) * mid;
-    gl_FragColor = vec4(edge, 1);
+    gl_FragColor = vec4(edge + overlay, 1);
 }
