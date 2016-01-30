@@ -12,7 +12,7 @@ import main.rendering.postprocess.PostProcessor;
 import main.rendering.postprocess.ShaderEffect;
 import main.rendering.utils.FrameBufferCreator;
 import main.rendering.utils.RenderTextureUtility;
-import main.resources.MaterialsStock;
+import main.resources.Materials;
 import main.runner.Demo;
 import main.runner.GdxInitializer;
 
@@ -26,12 +26,15 @@ public class Loop implements Demo {
   private final CameraController cameraController = CameraController.setUp(WIDTH, HEIGHT);
   private final VertexBuffer buffer = new VertexBuffer();
   private final RenderTextureUtility show = new RenderTextureUtility();
-  private final MaterialsStock materials = MaterialsStock.loadMaterials();
   private final PostProcessor postProcessor = PostProcessor.withSize(WIDTH, HEIGHT);
   private final UserInterfaceRenderer uiRenderer = UserInterfaceRenderer.withSize(WIDTH, HEIGHT);
   private float elapsedTime;
   private final ShaderEffect edge = ShaderEffect.createGeneric("data/screenspace/edge-detection.frag");
   private final FrameBuffer test = FrameBufferCreator.createDefault(WIDTH, HEIGHT);
+
+  {
+    Materials.initialise();
+  }
 
   @Override
   public void onUpdate(float delta) {
@@ -53,7 +56,7 @@ public class Loop implements Demo {
     renderRotatedQuad(256, 0, 1, 256, fade);
     Vector2 mouse = cameraController.unprojectedMouse();
     renderRotatedQuad(mouse.x, mouse.y, 0, 256, blue);
-    GBufferFiller.fill(buffer, gbuffer, materials, show);
+    GBufferFiller.fill(buffer, gbuffer, show);
     buffer.reset();
     //Benchmark.end();
 
@@ -63,7 +66,7 @@ public class Loop implements Demo {
     //uiRenderer.render(delta);
     edge.renderTo(test)
       .bind("u_texture", 0, gbuffer.ids)
-      .bind("u_texture_pattern", 1, materials.get("pattern").color)
+      .bind("u_texture_pattern", 1, Materials.get("pattern").color)
       .flush();
 
     show.show(test.getColorBufferTexture());

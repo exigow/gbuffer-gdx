@@ -6,16 +6,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-public class MaterialsStock {
+public class Materials {
 
-  private final Map<String, Material> materials = new HashMap<>();
+  private static final Map<String, Material> MAP = new HashMap<>();
 
-  private MaterialsStock() {
+  private Materials() {
     JsonObject json = ResourceLoader.loadJson("data/materials.json");
     JsonArray mats = json.getAsJsonArray("materials");
     for (JsonElement o : mats) {
@@ -27,7 +24,7 @@ public class MaterialsStock {
       Material mat = new Material();
       mat.color = loadTextureNullable(color);
       mat.emissive = loadTextureNullable(emissive);
-      materials.put(name, mat);
+      MAP.put(name, mat);
     }
   }
 
@@ -44,12 +41,12 @@ public class MaterialsStock {
     return e.getAsString();
   }
 
-  public static MaterialsStock loadMaterials() {
-    return new MaterialsStock();
+  public static void initialise() {
+    new Materials();
   }
 
-  public Material get(String name) {
-    Material ref = materials.get(name);
+  public static Material get(String name) {
+    Material ref = MAP.get(name);
     if (ref == null)
       throw new RuntimeException("Material (name: " + name + ") not found");
     return ref;
