@@ -6,13 +6,14 @@ import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import main.resources.Materials;
 import main.resources.ResourceLoader;
 
 public class PlanetRenderer {
 
-  private final static Mesh QUAD = createQuad();
+  private final static Mesh QUAD = createQuad(0, 0, 256, 1.5f);
   private final Matrix4 projectionMatrix = new Matrix4();
   private final ShaderProgram shader = ResourceLoader.loadShader("data/planet/planet.vert", "data/planet/planet.frag");
 
@@ -24,7 +25,7 @@ public class PlanetRenderer {
     shader.begin();
     shader.setUniformMatrix("u_projTrans", projectionMatrix);
     shader.setUniformi("u_texture", 0);
-    shader.setUniformf("u_rotation", time * .125f);
+    shader.setUniformf("u_rotation", time);
     QUAD.render(shader, GL20.GL_TRIANGLE_FAN, 0, 4);
     shader.end();
     gbuffer.color.end();
@@ -35,26 +36,27 @@ public class PlanetRenderer {
     projectionMatrix.set(actualized);
   }
 
-  private static Mesh createQuad() {
-    float size = 256;
+  private static Mesh createQuad(float x, float y, float size, float rotation) {
+    float cos = MathUtils.cos(rotation);
+    float sin = MathUtils.sin(rotation);
     float[] vertices = {
-      -size, // x1
-      -size, // y1
+      x - cos * size, // x1
+      y - sin * size, // y1
       0,  // u1
       0,  // v1
 
-      size,  // x2
-      -size, // y2
+      x + sin * size,  // x2
+      y - cos * size, // y2
       1,  // u2
       0,  // v2
 
-      size,  // x3
-      size,  // y3
+      x + cos * size,  // x3
+      y + sin * size,  // y3
       1,  // u3
       1,  // v3
 
-      -size, // x4
-      size,  // y4
+      x - sin * size, // x4
+      y + cos * size,  // y4
       0,  // u4
       1   // v4
     };
