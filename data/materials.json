@@ -1,9 +1,9 @@
 {
   "materials": [
     {
-      "name": "wall",
-      "color": "data/textures/wall-color.png",
-      "emissive": "data/textures/wall-emissive.png"
+      "name": "planet",
+      "color": "data/textures/planet.jpg",
+      "emissive": null
     },
     {
       "name": "ship",

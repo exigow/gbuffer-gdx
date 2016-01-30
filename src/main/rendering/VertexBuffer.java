@@ -8,7 +8,7 @@ import main.resources.ResourceLoader;
 
 public class VertexBuffer {
 
-  private final static int MAX_INSTANCES = 4;
+  private final static int MAX_INSTANCES = 1;
   private final Mesh mesh = initialiseEmptyMesh();
   private final float[] vertices = new float[MAX_INSTANCES * 7 * 4];
   //private final float[] pvertices = new float[vertices.length];
