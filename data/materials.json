@@ -2,7 +2,7 @@
   "materials": [
     {
       "name": "planet",
-      "color": "data/textures/planet.jpg",
+      "color": "data/textures/planet6.jpg",
       "emissive": null
     },
     {

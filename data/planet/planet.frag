@@ -18,6 +18,6 @@ void main() {
     vec4 atmosphere = vec4(1, 1, 1, 1) * fersnel;
     float ld = (1 - rLight) * .75 + .25;
     vec4 color = texture2D(u_texture, uv);
-    float shiness = pow(luminance(color) * ld * 2, 8);
+    float shiness = pow(luminance(color) * ld * 1.25, 8);
     gl_FragColor = color * vec4(vec3(ld), 1) + atmosphere * ld + shiness;
 }

@@ -5,7 +5,6 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import main.camera.CameraController;
 import main.rendering.GBuffer;
-import main.rendering.GBufferFiller;
 import main.rendering.PlanetRenderer;
 import main.rendering.VertexBuffer;
 import main.rendering.postprocess.PostProcessor;
@@ -47,11 +46,10 @@ public class Loop implements Demo {
 
     elapsedTime += delta;
     planetRenderer.render(gbuffer, elapsedTime);
-
     renderRotatedQuad(256, 0, 1, 256, Color.WHITE);
     Vector2 mouse = cameraController.unprojectedMouse();
     renderRotatedQuad(mouse.x, mouse.y, 1, 256, Color.WHITE);
-    GBufferFiller.fill(vertexBuffer, gbuffer);
+    //GBufferFiller.fill(vertexBuffer, gbuffer);
     vertexBuffer.reset();
 
 
