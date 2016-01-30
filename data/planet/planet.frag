@@ -4,12 +4,15 @@ uniform float u_rotation;
 
 void main() {
     vec2 p = -1 + 2 * v_texCoords.xy;
+    vec2 light = p + vec2(.25, .25);
     float r = sqrt(dot(p, p));
+    float rLight = sqrt(dot(light, light));
     if (r > 1) discard;
     float f = (1 - sqrt(1 - r)) / r;
     vec2 uv = p * f * vec2(.5, .5) + vec2(u_rotation, .5);
     float fersnel = clamp(pow(f, 4), 0, 1);
-    vec4 atmosphere = vec4(1, 1, 1, 1) * fersnel * .5;
-    float darker = .875;
-    gl_FragColor = texture2D(u_texture, uv) * vec4(darker, darker, darker, 1) - atmosphere;
+    vec4 atmosphere = vec4(1, 1, 1, 1) * fersnel;
+    float ld = (1 - rLight) * .75 + .25;
+    vec4 color = texture2D(u_texture, uv);
+    gl_FragColor = color * vec4(vec3(ld), 1) + atmosphere * ld;
 }
