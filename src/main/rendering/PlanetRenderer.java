@@ -25,7 +25,7 @@ public class PlanetRenderer {
     shader.begin();
     shader.setUniformMatrix("u_projTrans", projectionMatrix);
     shader.setUniformi("u_texture", 0);
-    shader.setUniformf("u_rotation", time);
+    shader.setUniformf("u_rotation", time * .025f);
     QUAD.render(shader, GL20.GL_TRIANGLE_FAN, 0, 4);
     shader.end();
     gbuffer.color.end();
