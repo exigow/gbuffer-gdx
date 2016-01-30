@@ -21,10 +21,12 @@ public class PlanetRenderer {
     Gdx.gl.glEnable(GL20.GL_BLEND);
     Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
     Materials.get("planet").color.bind(0);
+    Materials.get("planet-atmosphere").color.bind(1);
     gbuffer.color.begin();
     shader.begin();
     shader.setUniformMatrix("u_projTrans", projectionMatrix);
     shader.setUniformi("u_texture", 0);
+    shader.setUniformi("u_texture_atmo", 1);
     shader.setUniformf("u_rotation", time * .025f);
     QUAD.render(shader, GL20.GL_TRIANGLE_FAN, 0, 4);
     shader.end();

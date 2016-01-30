@@ -6,6 +6,11 @@
       "emissive": null
     },
     {
+      "name": "planet-atmosphere",
+      "color": "data/textures/planet-atmosphere.png",
+      "emissive": null
+    },
+    {
       "name": "ship",
       "color": "data/textures/ship-color.png",
       "emissive": "data/textures/ship-emissive.png"
