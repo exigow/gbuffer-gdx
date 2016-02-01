@@ -10,3 +10,5 @@
     * dosłownie identyko; zawsze; jako select może się ziększać
 
 3) trójkąty :* =3 <3
+
+4) zniszczenia jednostek: dissolve shader (takie wypalanie po alpha)
