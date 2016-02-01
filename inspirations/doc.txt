@@ -14,3 +14,4 @@
 4) zniszczenia jednostek: dissolve shader (takie wypalanie po alpha)
     * star citizen: https://www.youtube.com/watch?v=OkAaLd0FdK0
     * FBO per jednostka
+    * "hull texture pipes" https://s-media-cache-ak0.pinimg.com/736x/4e/02/07/4e020723700561d2cda8cc56cf25357c.jpg
