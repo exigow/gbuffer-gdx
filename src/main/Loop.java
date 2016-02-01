@@ -54,9 +54,9 @@ public class Loop implements Demo {
     vertexBuffer.reset();
 
 
-    //postProcessor.process(gbuffer);
-    //show.show(postProcessor.getResult());
-    show.show(gbuffer.color.getColorBufferTexture());
+    postProcessor.process(gbuffer);
+    show.show(postProcessor.getResult());
+    //show.show(gbuffer.color.getColorBufferTexture());
   }
 
   private void renderRotatedQuad(float x, float y, float r, float scale, Color color) {

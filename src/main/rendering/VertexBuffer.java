@@ -70,12 +70,14 @@ public class VertexBuffer {
     Materials.get("destruction-mask").color.bind(1);
     Materials.get("fire-pattern").color.bind(2);
     Materials.get("fire-pattern-mask").color.bind(3);
+    Materials.get("hull").color.bind(4);
     colorShader.begin();
     colorShader.setUniformMatrix("u_projTrans", projectionMatrix);
     colorShader.setUniformi("u_texture", 0);
     colorShader.setUniformi("u_texture_destruction_mask", 1);
     colorShader.setUniformi("u_texture_fire_pattern", 2);
     colorShader.setUniformi("u_texture_fire_pattern_mask", 3);
+    colorShader.setUniformi("u_texture_hull", 4);
     colorShader.setUniformf("time", time);
     mesh.setVertices(vertices, 0, pivot);
     mesh.getIndicesBuffer().position(0);

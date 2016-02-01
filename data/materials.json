@@ -11,6 +11,11 @@
       "emissive": null
     },
     {
+      "name": "hull",
+      "color": "data/textures/hull-pattern.png",
+      "emissive": null
+    },
+    {
       "name": "fire-pattern",
       "color": "data/textures/fire-pattern.png",
       "emissive": null
