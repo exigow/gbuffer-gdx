@@ -1,8 +1,10 @@
 package main.rendering;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
+import main.resources.Materials;
 import main.resources.ResourceLoader;
 
 public class VertexBuffer {
@@ -17,6 +19,7 @@ public class VertexBuffer {
   private final ShaderProgram idShader = ResourceLoader.loadShader("data/buffer/id.vert", "data/buffer/id.frag");
   private int pivot = 0;
   private final Matrix4 projectionMatrix = new Matrix4();
+  private float time = 0;
 
   private static Mesh initialiseEmptyMesh() {
     VertexAttribute[] attributes = new VertexAttribute[] {
@@ -61,7 +64,23 @@ public class VertexBuffer {
   }
 
   public void paintColor(Texture texture) {
-    paint(texture, colorShader);
+    time += Gdx.graphics.getDeltaTime();
+    //paint(texture, colorShader);
+    texture.bind(0);
+    Materials.get("destruction-mask").color.bind(1);
+    Materials.get("fire-pattern").color.bind(2);
+    Materials.get("fire-pattern-mask").color.bind(3);
+    colorShader.begin();
+    colorShader.setUniformMatrix("u_projTrans", projectionMatrix);
+    colorShader.setUniformi("u_texture", 0);
+    colorShader.setUniformi("u_texture_destruction_mask", 1);
+    colorShader.setUniformi("u_texture_fire_pattern", 2);
+    colorShader.setUniformi("u_texture_fire_pattern_mask", 3);
+    colorShader.setUniformf("time", time);
+    mesh.setVertices(vertices, 0, pivot);
+    mesh.getIndicesBuffer().position(0);
+    mesh.render(colorShader, GL20.GL_TRIANGLES, 0, MAX_INSTANCES * 6);
+    colorShader.end();
   }
 
   public void paintVelocity(Texture texture) {

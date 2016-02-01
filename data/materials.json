@@ -11,6 +11,16 @@
       "emissive": null
     },
     {
+      "name": "fire-pattern",
+      "color": "data/textures/fire-pattern.png",
+      "emissive": null
+    },
+    {
+      "name": "fire-pattern-mask",
+      "color": "data/textures/fire-pattern-mask.png",
+      "emissive": null
+    },
+    {
       "name": "planet-atmosphere",
       "color": "data/textures/planet-atmosphere.png",
       "emissive": null
