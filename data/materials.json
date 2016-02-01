@@ -6,6 +6,11 @@
       "emissive": null
     },
     {
+      "name": "destruction-mask",
+      "color": "data/textures/destruction-mask.png",
+      "emissive": null
+    },
+    {
       "name": "planet-atmosphere",
       "color": "data/textures/planet-atmosphere.png",
       "emissive": null

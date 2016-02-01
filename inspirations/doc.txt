@@ -12,3 +12,5 @@
 3) trójkąty :* =3 <3
 
 4) zniszczenia jednostek: dissolve shader (takie wypalanie po alpha)
+    * star citizen: https://www.youtube.com/watch?v=OkAaLd0FdK0
+    * FBO per jednostka

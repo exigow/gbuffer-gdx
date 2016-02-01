@@ -1,6 +1,5 @@
 package main.rendering;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
@@ -78,8 +77,6 @@ public class VertexBuffer {
   }
 
   private void paint(Texture texture, ShaderProgram shader) {
-    Gdx.gl.glEnable(GL20.GL_BLEND);
-    Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
     texture.bind(0);
     shader.begin();
     shader.setUniformMatrix("u_projTrans", projectionMatrix);
@@ -88,7 +85,6 @@ public class VertexBuffer {
     mesh.getIndicesBuffer().position(0);
     mesh.render(shader, GL20.GL_TRIANGLES, 0, MAX_INSTANCES * 6);
     shader.end();
-    Gdx.gl.glDisable(GL20.GL_BLEND);
   }
 
   public void reset() {
