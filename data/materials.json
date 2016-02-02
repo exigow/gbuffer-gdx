@@ -22,7 +22,7 @@
     },
     {
       "name": "burnout",
-      "color": "data/textures/burnout.jpg",
+      "color": "data/textures/burnout.png",
       "emissive": null
     },
     {

@@ -3,13 +3,14 @@ package main.rendering;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import main.resources.Materials;
 import main.resources.ResourceLoader;
 
 public class VertexBuffer {
 
-  private final static int MAX_INSTANCES = 2;
+  private final static int MAX_INSTANCES = 1;
   private final Mesh mesh = initialiseEmptyMesh();
   private final float[] vertices = new float[MAX_INSTANCES * 7 * 4];
   //private final float[] pvertices = new float[vertices.length];
@@ -19,7 +20,8 @@ public class VertexBuffer {
   private final ShaderProgram idShader = ResourceLoader.loadShader("data/buffer/id.vert", "data/buffer/id.frag");
   private int pivot = 0;
   private final Matrix4 projectionMatrix = new Matrix4();
-  private float time = 0;
+  private float modTime = 0;
+  private float elapsedTime = 0;
 
   private static Mesh initialiseEmptyMesh() {
     VertexAttribute[] attributes = new VertexAttribute[] {
@@ -61,18 +63,20 @@ public class VertexBuffer {
 
   public void updateProjection(Matrix4 actualized) {
     projectionMatrix.set(actualized);
+    elapsedTime += Gdx.graphics.getDeltaTime();
+    modTime = .5f + MathUtils.sin(elapsedTime) * .5f;
+    /*if (modTime > 1)
+      modTime -= 1;*/
   }
 
   public void paintColor(Texture texture) {
-    time += Gdx.graphics.getDeltaTime();
-    //paint(texture, colorShader);
     texture.bind(0);
     Materials.get("burnout").color.bind(1);
     colorShader.begin();
     colorShader.setUniformMatrix("u_projTrans", projectionMatrix);
     colorShader.setUniformi("u_texture", 0);
     colorShader.setUniformi("u_texture_mask", 1);
-    colorShader.setUniformf("time", time);
+    colorShader.setUniformf("time", modTime);
     mesh.setVertices(vertices, 0, pivot);
     mesh.getIndicesBuffer().position(0);
     mesh.render(colorShader, GL20.GL_TRIANGLES, 0, MAX_INSTANCES * 6);
@@ -84,7 +88,17 @@ public class VertexBuffer {
   }
 
   public void paintEmissive(Texture texture) {
-    paint(texture, emissiveShader);
+    texture.bind(0);
+    Materials.get("burnout").color.bind(1);
+    emissiveShader.begin();
+    emissiveShader.setUniformMatrix("u_projTrans", projectionMatrix);
+    emissiveShader.setUniformi("u_texture", 0);
+    emissiveShader.setUniformi("u_texture_mask", 1);
+    emissiveShader.setUniformf("time", modTime);
+    mesh.setVertices(vertices, 0, pivot);
+    mesh.getIndicesBuffer().position(0);
+    mesh.render(emissiveShader, GL20.GL_TRIANGLES, 0, MAX_INSTANCES * 6);
+    emissiveShader.end();
   }
 
   public void paintIds(Texture texture) {

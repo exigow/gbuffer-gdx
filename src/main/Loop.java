@@ -46,17 +46,17 @@ public class Loop implements Demo {
     gbuffer.color.end();
 
     elapsedTime += delta;
-    //planetRenderer.render(gbuffer, elapsedTime);
-    renderRotatedQuad(256, 0, 1, 256, Color.WHITE);
+    planetRenderer.render(gbuffer, elapsedTime);
+    //renderRotatedQuad(256, 0, 1, 256, Color.WHITE);
     Vector2 mouse = cameraController.unprojectedMouse();
     renderRotatedQuad(mouse.x, mouse.y, 1, 256, Color.WHITE);
     GBufferFiller.fill(vertexBuffer, gbuffer);
     vertexBuffer.reset();
 
 
-    //postProcessor.process(gbuffer);
-    //show.show(postProcessor.getResult());
-    show.show(gbuffer.color.getColorBufferTexture());
+    postProcessor.process(gbuffer);
+    show.show(postProcessor.getResult());
+    //show.show(gbuffer.emissive.getColorBufferTexture());
   }
 
   private void renderRotatedQuad(float x, float y, float r, float scale, Color color) {
