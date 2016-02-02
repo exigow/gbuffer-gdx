@@ -9,7 +9,7 @@ void main() {
     vec4 color = texture2D(u_texture, v_texCoords) * vec4(ambient, 1);
     if (level + time < 1)
         discard;
-    if (level + time < 1.05)
+    if (level + time < 1.025)
         color = vec4(.75, .875, 1, color.a);
     gl_FragColor = color;
 }
