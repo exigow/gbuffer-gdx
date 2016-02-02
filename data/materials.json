@@ -21,6 +21,11 @@
       "emissive": null
     },
     {
+      "name": "burnout",
+      "color": "data/textures/burnout.jpg",
+      "emissive": null
+    },
+    {
       "name": "fire-pattern-mask",
       "color": "data/textures/fire-pattern-mask.png",
       "emissive": null
