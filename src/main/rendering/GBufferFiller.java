@@ -17,10 +17,6 @@ public class GBufferFiller {
     buffer.paintEmissive(Materials.get("ship").emissive);
     gbuffer.emissive.end();
 
-    gbuffer.velocity.begin();
-    buffer.paintVelocity(Materials.get("ship").color);
-    gbuffer.velocity.end();
-
     gbuffer.ids.begin();
     buffer.paintIds(Materials.get("ship").color);
     gbuffer.ids.end();

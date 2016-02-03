@@ -7,12 +7,11 @@ import main.resources.ResourceLoader;
 
 public class VertexBuffer {
 
-  private final static int MAX_INSTANCES = 1;
+  private final static int MAX_INSTANCES = 2;
   private final Mesh mesh = initialiseEmptyMesh();
-  private final float[] vertices = new float[MAX_INSTANCES * 7 * 4];
+  private final float[] vertices = new float[MAX_INSTANCES * 5 * 4];
   private final ShaderProgram colorShader = ResourceLoader.loadShader("data/buffer/color.vert", "data/buffer/color.frag");
   private final ShaderProgram emissiveShader = ResourceLoader.loadShader("data/buffer/color.vert", "data/buffer/emissive.frag");
-  private final ShaderProgram velocityShader = ResourceLoader.loadShader("data/buffer/velocity.vert", "data/buffer/velocity.frag");
   private final ShaderProgram idShader = ResourceLoader.loadShader("data/buffer/id.vert", "data/buffer/id.frag");
   private int pivot = 0;
   private final Matrix4 projectionMatrix = new Matrix4();
@@ -20,7 +19,6 @@ public class VertexBuffer {
   private static Mesh initialiseEmptyMesh() {
     VertexAttribute[] attributes = new VertexAttribute[] {
       new VertexAttribute(VertexAttributes.Usage.Position, 2, "a_position"),
-      new VertexAttribute(VertexAttributes.Usage.Generic, 2, "a_velocity"),
       new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, 2, "a_texCoord0"),
       new VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, "a_color")
     };
@@ -47,12 +45,10 @@ public class VertexBuffer {
   public void putVertex(float x, float y, float u, float v, float color) {
     vertices[pivot] = x;
     vertices[pivot + 1] = y;
-    vertices[pivot + 2] = .5f;
-    vertices[pivot + 3] = .5f;
-    vertices[pivot + 4] = u;
-    vertices[pivot + 5] = v;
-    vertices[pivot + 6] = color;
-    pivot += 7;
+    vertices[pivot + 2] = u;
+    vertices[pivot + 3] = v;
+    vertices[pivot + 4] = color;
+    pivot += 5;
   }
 
   public void updateProjection(Matrix4 actualized) {
@@ -61,10 +57,6 @@ public class VertexBuffer {
 
   public void paintColor(Texture texture) {
     paint(texture, colorShader);
-  }
-
-  public void paintVelocity(Texture texture) {
-    paint(texture, velocityShader);
   }
 
   public void paintEmissive(Texture texture) {

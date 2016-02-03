@@ -10,13 +10,11 @@ public class GBuffer {
 
   public final FrameBuffer color;
   public final FrameBuffer emissive;
-  public final FrameBuffer velocity;
   public final FrameBuffer ids;
 
   private GBuffer(int width, int height) {
     color = FrameBufferCreator.createDefault(width, height);
     emissive = FrameBufferCreator.createDefault(512, 512);
-    velocity = FrameBufferCreator.createDefault(128, 128);
     ids = FrameBufferCreator.createDefault(512, 512);
   }
 
@@ -27,7 +25,6 @@ public class GBuffer {
   public void clearSubBuffers() {
     clearSubBuffer(color, Color.BLACK);
     clearSubBuffer(emissive, Color.BLACK);
-    clearSubBuffer(velocity, new Color(.5f, .5f, 0, 1));
     clearSubBuffer(ids, Color.BLACK);
   }
 
