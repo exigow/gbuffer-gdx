@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import main.resources.ResourceLoader;
 
-public class VertexBuffer {
+public class BatcherBuffer {
 
   private final static int MAX_INSTANCES = 2;
   private final Mesh mesh = initialiseEmptyMesh();

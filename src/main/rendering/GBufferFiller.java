@@ -6,7 +6,7 @@ import main.resources.Materials;
 
 public class GBufferFiller {
 
-  public static void fill(VertexBuffer buffer, GBuffer gbuffer) {
+  public static void fill(BatcherBuffer buffer, GBuffer gbuffer) {
     enableAlphaBlending();
 
     gbuffer.color.begin();;
