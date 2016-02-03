@@ -18,9 +18,9 @@ public class BatcherBuffer {
 
   private static Mesh initialiseEmptyMesh() {
     VertexAttribute[] attributes = new VertexAttribute[] {
-      new VertexAttribute(VertexAttributes.Usage.Position, 2, "a_position"),
-      new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, 2, "a_texCoord0"),
-      new VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, "a_color")
+      new VertexAttribute(VertexAttributes.Usage.Position, 2, "positionAttr"),
+      new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, 2, "texCoordAttr"),
+      new VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, "colorAttr")
     };
     int maxVertices = MAX_INSTANCES * 4;
     Mesh mesh = new Mesh(true, maxVertices, MAX_INSTANCES * 6, attributes);
