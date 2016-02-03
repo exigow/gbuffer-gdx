@@ -1,10 +1,9 @@
-package main.rendering;
+package main.rendering.utils;
 
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import main.rendering.postprocess.ShaderEffect;
-import main.rendering.utils.FrameBufferCreator;
 
-public class Blurer {
+public class TwoPassBufferBlurer {
 
   private static final int SIZE = 512;
   private final ShaderEffect shader = ShaderEffect.createGeneric("data/screenspace/blur-gauss.frag");
@@ -22,7 +21,7 @@ public class Blurer {
 
   private void blur(FrameBuffer from, FrameBuffer to, float x, float y) {
     shader.renderTo(to)
-      .bind("u_texture", 0, from)
+      .bind("u_texture", from)
       .paramterize("offset", x / SIZE, y / SIZE)
       .flush();
   }

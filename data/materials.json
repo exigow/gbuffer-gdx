@@ -2,38 +2,35 @@
   "materials": [
     {
       "name": "planet",
-      "color": "data/textures/planet6.jpg",
-      "emissive": null
+      "color": "data/textures/planet6.jpg"
+    },
+    {
+      "name": "turret",
+      "color": "data/textures/turret-color.png"
     },
     {
       "name": "destruction-mask",
-      "color": "data/textures/destruction-mask.png",
-      "emissive": null
+      "color": "data/textures/destruction-mask.png"
     },
     {
       "name": "hull",
-      "color": "data/textures/hull-pattern.png",
-      "emissive": null
+      "color": "data/textures/hull-pattern.png"
     },
     {
       "name": "fire-pattern",
-      "color": "data/textures/fire-pattern.png",
-      "emissive": null
+      "color": "data/textures/fire-pattern.png"
     },
     {
       "name": "burnout",
-      "color": "data/textures/burnout.png",
-      "emissive": null
+      "color": "data/textures/burnout.png"
     },
     {
       "name": "fire-pattern-mask",
-      "color": "data/textures/fire-pattern-mask.png",
-      "emissive": null
+      "color": "data/textures/fire-pattern-mask.png"
     },
     {
       "name": "planet-atmosphere",
-      "color": "data/textures/planet-atmosphere.png",
-      "emissive": null
+      "color": "data/textures/planet-atmosphere.png"
     },
     {
       "name": "ship",
@@ -42,13 +39,11 @@
     },
     {
       "name": "back",
-      "color": "data/textures/back2.jpg",
-      "emissive": null
+      "color": "data/textures/back2.jpg"
     },
     {
       "name": "pattern",
-      "color": "data/textures/pattern.png",
-      "emissive": null
+      "color": "data/textures/pattern.png"
     }
   ]
 }

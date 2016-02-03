@@ -6,7 +6,7 @@ import main.resources.Materials;
 
 public class GBufferFiller {
 
-  public static void fill(VertexBuffer buffer, GBuffer gbuffer) {
+  public static void fill(BatcherBuffer buffer, GBuffer gbuffer) {
     enableAlphaBlending();
 
     gbuffer.color.begin();;
@@ -16,10 +16,6 @@ public class GBufferFiller {
     gbuffer.emissive.begin();
     buffer.paintEmissive(Materials.get("ship").emissive);
     gbuffer.emissive.end();
-
-    gbuffer.velocity.begin();
-    buffer.paintVelocity(Materials.get("ship").color);
-    gbuffer.velocity.end();
 
     gbuffer.ids.begin();
     buffer.paintIds(Materials.get("ship").color);

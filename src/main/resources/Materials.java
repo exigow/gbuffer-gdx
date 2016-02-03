@@ -36,6 +36,8 @@ public class Materials {
 
   private static String asNullableString(JsonObject from, String name) {
     JsonElement e = from.get(name);
+    if (e == null)
+      return null;
     if (e.isJsonNull())
       return null;
     return e.getAsString();
