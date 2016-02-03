@@ -21,7 +21,7 @@ public class TwoPassBufferBlurer {
 
   private void blur(FrameBuffer from, FrameBuffer to, float x, float y) {
     shader.renderTo(to)
-      .bind("u_texture", 0, from)
+      .bind("u_texture", from)
       .paramterize("offset", x / SIZE, y / SIZE)
       .flush();
   }

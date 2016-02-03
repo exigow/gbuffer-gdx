@@ -42,31 +42,31 @@ public class PostProcessor {
     blurer.blur(gbuffer.emissive);
 
     mixColorAndEmissive.renderTo(colorPlusEmissiveBuffer)
-      .bind("u_texture_color", 0, gbuffer.color)
-      .bind("u_texture_emissive", 1, blurer.getResult())
+      .bind("u_texture_color", gbuffer.color)
+      .bind("u_texture_emissive", blurer.getResult())
       .flush();
 
     cutoff.renderTo(cutoffBuffer)
-      .bind("u_texture", 0, colorPlusEmissiveBuffer)
+      .bind("u_texture", colorPlusEmissiveBuffer)
       .flush();
 
     flares.renderTo(bloomBuffer)
-      .bind("u_texture", 0, cutoffBuffer)
-      .bind("u_texture_lens_dirt", 1, lensDirt)
+      .bind("u_texture", cutoffBuffer)
+      .bind("u_texture_lens_dirt", lensDirt)
       .flush();
 
     mix.renderTo(secondTempBuffer)
-      .bind("u_texture_base", 0, colorPlusEmissiveBuffer)
-      .bind("u_texture_bloom", 1, bloomBuffer)
+      .bind("u_texture_base", colorPlusEmissiveBuffer)
+      .bind("u_texture_bloom", bloomBuffer)
       .flush();
 
     aberration.renderTo(firstTempBuffer)
-      .bind("u_texture", 0, secondTempBuffer)
+      .bind("u_texture", secondTempBuffer)
       .paramterize("texel", 1f / width, 1f / height)
       .flush();
 
     fxaa.renderTo(secondTempBuffer)
-      .bind("u_texture", 0, firstTempBuffer)
+      .bind("u_texture", firstTempBuffer)
       .paramterize("FXAA_REDUCE_MIN", 1f / 128f)
       .paramterize("FXAA_REDUCE_MUL", 1f / 8f)
       .paramterize("FXAA_SPAN_MAX", 8f)
@@ -74,7 +74,7 @@ public class PostProcessor {
       .flush();
 
     sharpen.renderTo(firstTempBuffer)
-      .bind("u_texture", 0, secondTempBuffer)
+      .bind("u_texture", secondTempBuffer)
       .paramterize("texel", 1f / width, 1f / height)
       .flush();
   }

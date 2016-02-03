@@ -10,6 +10,7 @@ public class ShaderEffect {
 
   private FrameBuffer target;
   private ShaderProgram shader;
+  private int bindIterator = 0;
 
   private ShaderEffect(ShaderProgram shader) {
     this.shader = shader;
@@ -27,15 +28,16 @@ public class ShaderEffect {
     return this;
   }
 
-  public ShaderEffect bind(String name, int slot, FrameBuffer buffer) {
-    buffer.getColorBufferTexture().bind(slot);
-    shader.setUniformi(name, slot);
+  public ShaderEffect bind(String name, FrameBuffer buffer) {
+    buffer.getColorBufferTexture().bind(bindIterator);
+    shader.setUniformi(name, bindIterator);
+    bindIterator++;
     return this;
   }
 
-  public ShaderEffect bind(String name, int slot, Texture texture) {
-    texture.bind(slot);
-    shader.setUniformi(name, slot);
+  public ShaderEffect bind(String name, Texture texture) {
+    texture.bind(bindIterator);
+    shader.setUniformi(name, bindIterator);
     return this;
   }
 
@@ -54,6 +56,7 @@ public class ShaderEffect {
     StaticFullscreenQuad.renderUsing(shader);
     shader.end();
     target.end();
+    bindIterator = 0;
   }
 
 }
