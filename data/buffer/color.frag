@@ -1,5 +1,6 @@
-varying vec2 v_texCoords;
 uniform sampler2D u_texture;
+
+varying vec2 v_texCoords;
 
 void main() {
     vec3 ambient = vec3(.17, .45, .90);

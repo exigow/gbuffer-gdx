@@ -1,7 +1,9 @@
+uniform mat4 u_projTrans;
+
 attribute vec4 a_position;
 attribute vec2 a_texCoord0;
 attribute vec4 a_color;
-uniform mat4 u_projTrans;
+
 varying vec2 v_texCoords;
 varying vec4 v_color;
 
