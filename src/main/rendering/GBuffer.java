@@ -17,8 +17,8 @@ public class GBuffer {
     ids = FrameBufferCreator.createDefault(512, 512);
   }
 
-  public static GBuffer withSize(int width, int heigth) {
-    return new GBuffer(width, heigth);
+  public static GBuffer withSize(int width, int height) {
+    return new GBuffer(width, height);
   }
 
   public void clearSubBuffers() {
