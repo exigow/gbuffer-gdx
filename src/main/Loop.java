@@ -4,12 +4,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import main.camera.CameraController;
-import main.rendering.BatcherBuffer;
-import main.rendering.GBuffer;
-import main.rendering.GBufferFiller;
-import main.rendering.PlanetRenderer;
+import main.rendering.*;
 import main.rendering.postprocess.PostProcessor;
 import main.rendering.utils.RenderTextureUtility;
+import main.resources.Materials;
 import main.runner.Demo;
 import main.runner.GdxInitializer;
 
@@ -25,6 +23,7 @@ public class Loop implements Demo {
   private final RenderTextureUtility show = new RenderTextureUtility();
   private final PostProcessor postProcessor = PostProcessor.withSize(WIDTH, HEIGHT);
   private final PlanetRenderer planetRenderer = new PlanetRenderer();
+  private final DustRenderer dustRenderer = new DustRenderer();
   private float elapsedTime = 0;
 
   @Override
@@ -33,16 +32,18 @@ public class Loop implements Demo {
 
     batcherBuffer.updateProjection(cameraController.matrix());
     planetRenderer.updateProjection(cameraController.matrix());
+    dustRenderer.updateProjection(cameraController.matrix());
 
     gbuffer.clearSubBuffers();
 
-    /*gbuffer.color.begin();
+    gbuffer.color.begin();
     show.show(Materials.get("back").color);
-    gbuffer.color.end();*/
+    dustRenderer.render();
+    gbuffer.color.end();
 
-    //elapsedTime += delta;
-    //planetRenderer.render(gbuffer, elapsedTime);
-    renderRotatedQuad(256, 0, 1, 256, Color.WHITE);
+    elapsedTime += delta;
+    planetRenderer.render(gbuffer, elapsedTime);
+    //renderRotatedQuad(256, 0, 1, 256, Color.WHITE);
     Vector2 mouse = cameraController.unprojectedMouse();
     renderRotatedQuad(mouse.x, mouse.y, 1, 256, Color.WHITE);
     GBufferFiller.fill(batcherBuffer, gbuffer);

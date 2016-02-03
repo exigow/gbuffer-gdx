@@ -13,7 +13,7 @@ import main.resources.ResourceLoader;
 
 public class PlanetRenderer {
 
-  private final static Mesh QUAD = createQuad(0, 0, 256, 1.5f);
+  private final static Mesh QUAD = createQuad(256, 384, 256, 1.5f);
   private final Matrix4 projectionMatrix = new Matrix4();
   private final ShaderProgram shader = ResourceLoader.loadShader("data/planet/planet.vert", "data/planet/planet.frag");
 
