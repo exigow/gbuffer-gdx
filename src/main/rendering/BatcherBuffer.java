@@ -70,8 +70,8 @@ public class BatcherBuffer {
   private void paint(Texture texture, ShaderProgram shader) {
     texture.bind(0);
     shader.begin();
-    shader.setUniformMatrix("u_projTrans", projectionMatrix);
-    shader.setUniformi("u_texture", 0);
+    shader.setUniformMatrix("projection", projectionMatrix);
+    shader.setUniformi("texture", 0);
     mesh.setVertices(vertices, 0, pivot);
     mesh.getIndicesBuffer().position(0);
     mesh.render(shader, GL20.GL_TRIANGLES, 0, MAX_INSTANCES * 6);
