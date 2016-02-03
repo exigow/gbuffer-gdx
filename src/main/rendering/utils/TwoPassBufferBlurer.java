@@ -1,10 +1,9 @@
-package main.rendering;
+package main.rendering.utils;
 
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import main.rendering.postprocess.ShaderEffect;
-import main.rendering.utils.FrameBufferCreator;
 
-public class Blurer {
+public class TwoPassBufferBlurer {
 
   private static final int SIZE = 512;
   private final ShaderEffect shader = ShaderEffect.createGeneric("data/screenspace/blur-gauss.frag");

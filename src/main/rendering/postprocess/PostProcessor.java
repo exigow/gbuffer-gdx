@@ -2,9 +2,9 @@ package main.rendering.postprocess;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import main.rendering.Blurer;
 import main.rendering.GBuffer;
 import main.rendering.utils.FrameBufferCreator;
+import main.rendering.utils.TwoPassBufferBlurer;
 import main.resources.ResourceLoader;
 
 public class PostProcessor {
@@ -16,7 +16,7 @@ public class PostProcessor {
   private final ShaderEffect cutoff = ShaderEffect.createGeneric("data/screenspace/luminance-cutoff.frag");
   private final ShaderEffect aberration = ShaderEffect.createGeneric("data/screenspace/chromatic-aberration.frag");
   private final ShaderEffect mix = ShaderEffect.createGeneric("data/screenspace/mix-bloom.frag");
-  private final Blurer blurer = new Blurer();
+  private final TwoPassBufferBlurer blurer = new TwoPassBufferBlurer();
   private final FrameBuffer colorPlusEmissiveBuffer;
   private final FrameBuffer firstTempBuffer;
   private final FrameBuffer secondTempBuffer;
