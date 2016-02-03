@@ -10,7 +10,6 @@ import main.rendering.GBufferFiller;
 import main.rendering.PlanetRenderer;
 import main.rendering.postprocess.PostProcessor;
 import main.rendering.utils.RenderTextureUtility;
-import main.resources.Materials;
 import main.runner.Demo;
 import main.runner.GdxInitializer;
 
@@ -27,10 +26,6 @@ public class Loop implements Demo {
   private final PostProcessor postProcessor = PostProcessor.withSize(WIDTH, HEIGHT);
   private final PlanetRenderer planetRenderer = new PlanetRenderer();
   private float elapsedTime = 0;
-
-  {
-    Materials.initialise();
-  }
 
   @Override
   public void onUpdate(float delta) {
