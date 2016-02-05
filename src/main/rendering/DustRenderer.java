@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import main.resources.Materials;
 import main.resources.ResourceLoader;
 
@@ -74,12 +75,12 @@ public class DustRenderer {
     Gdx.gl.glDisable(GL20.GL_BLEND);
   }
 
-  public void update(PerspectiveCamera camera) {
+  public void update(Vector3 relative) {
     for (int i = 0; i < vertices.length; i += 4) {
       float x = vertices[i];
       float y = vertices[i + 1];
-      if (Vector2.dst(x, y, camera.position.x, camera.position.y) > RANDOMIZE_RADIUS)
-        resetDustPosition(camera.position.x, camera.position.y, i, RANDOMIZE_RADIUS - 1);
+      if (Vector2.dst(x, y, relative.x, relative.y) > RANDOMIZE_RADIUS)
+        resetDustPosition(relative.x, relative.y, i, RANDOMIZE_RADIUS - 1);
     }
   }
 

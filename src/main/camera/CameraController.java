@@ -8,9 +8,9 @@ import com.badlogic.gdx.math.collision.Ray;
 
 public class CameraController {
 
-  private final Vector3 eye = new Vector3(0, 0, -512);
+  public final Vector3 eye = new Vector3(0, 0, -512);
   private final Vector3 target = new Vector3(eye);
-  public final PerspectiveCamera camera;
+  private final PerspectiveCamera camera;
   
   public static CameraController setUp(int width, int height) {
     return new CameraController(width, height);

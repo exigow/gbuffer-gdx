@@ -33,7 +33,7 @@ public class Loop implements Demo {
     batcherBuffer.updateProjection(cameraController.matrix());
     planetRenderer.updateProjection(cameraController.matrix());
     dustRenderer.updateProjection(cameraController.matrix());
-    dustRenderer.update(cameraController.camera);
+    dustRenderer.update(cameraController.eye);
 
     gbuffer.clearSubBuffers();
 
