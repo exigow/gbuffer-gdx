@@ -5,6 +5,10 @@
       "color": "data/textures/planet6.jpg"
     },
     {
+      "name": "star",
+      "color": "data/textures/star.png"
+    },
+    {
       "name": "destruction-mask",
       "color": "data/textures/destruction-mask.png"
     },

@@ -23,7 +23,7 @@ public class Loop implements Demo {
   private final RenderTextureUtility show = new RenderTextureUtility();
   private final PostProcessor postProcessor = PostProcessor.withSize(WIDTH, HEIGHT);
   private final PlanetRenderer planetRenderer = new PlanetRenderer();
-  private final DustRenderer dustRenderer = DustRenderer.withCapacity(16);
+  private final DustRenderer dustRenderer = DustRenderer.withCapacity(1024 * 4);
   private float elapsedTime = 0;
 
   @Override
@@ -38,7 +38,6 @@ public class Loop implements Demo {
 
     gbuffer.color.begin();
     show.show(Materials.get("back").color);
-    dustRenderer.render();
     gbuffer.color.end();
 
     elapsedTime += delta;
@@ -49,6 +48,9 @@ public class Loop implements Demo {
     GBufferFiller.fill(batcherBuffer, gbuffer);
     batcherBuffer.reset();
 
+    gbuffer.color.begin();
+    dustRenderer.render();
+    gbuffer.color.end();
 
     postProcessor.process(gbuffer);
     show.show(postProcessor.getResult());
