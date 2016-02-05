@@ -14,7 +14,7 @@ import static com.badlogic.gdx.math.MathUtils.random;
 
 public class DustRenderer {
 
-  private static final float RANDOMIZE_RADIUS = 1024;
+  private static final float RANDOMIZE_RADIUS = 768;
   private final ShaderProgram shader = ResourceLoader.loadShader("data/dust-point/dust-point.vert", "data/dust-point/dust-point.frag");
   private final Matrix4 projection = new Matrix4();
   private final Mesh mesh;

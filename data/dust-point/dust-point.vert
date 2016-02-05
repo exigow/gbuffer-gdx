@@ -11,5 +11,5 @@ void main() {
     gl_Position = position;
     vec3 ndc = gl_Position.xyz / gl_Position.w;
     float zDist = 1.0 - ndc.z;
-    gl_PointSize = 256 * zDist;
+    gl_PointSize = 512 * zDist;
 }
