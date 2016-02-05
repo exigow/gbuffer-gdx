@@ -23,7 +23,7 @@ public class Loop implements Demo {
   private final RenderTextureUtility show = new RenderTextureUtility();
   private final PostProcessor postProcessor = PostProcessor.withSize(WIDTH, HEIGHT);
   private final PlanetRenderer planetRenderer = new PlanetRenderer();
-  private final DustRenderer dustRenderer = DustRenderer.withCapacity(1024 * 4);
+  private final DustRenderer dustRenderer = DustRenderer.withCapacity(512);
   private float elapsedTime = 0;
 
   @Override
@@ -33,23 +33,25 @@ public class Loop implements Demo {
     batcherBuffer.updateProjection(cameraController.matrix());
     planetRenderer.updateProjection(cameraController.matrix());
     dustRenderer.updateProjection(cameraController.matrix());
+    dustRenderer.update(cameraController.camera);
 
     gbuffer.clearSubBuffers();
 
     gbuffer.color.begin();
     show.show(Materials.get("back").color);
+    dustRenderer.render(true);
     gbuffer.color.end();
 
     elapsedTime += delta;
     planetRenderer.render(gbuffer, elapsedTime);
-    //renderRotatedQuad(256, 0, 1, 256, Color.WHITE);
+    renderRotatedQuad(0, 0, 1, 256, Color.WHITE);
     Vector2 mouse = cameraController.unprojectedMouse();
     renderRotatedQuad(mouse.x, mouse.y, 1, 256, Color.WHITE);
     GBufferFiller.fill(batcherBuffer, gbuffer);
     batcherBuffer.reset();
 
     gbuffer.color.begin();
-    dustRenderer.render();
+    dustRenderer.render(false);
     gbuffer.color.end();
 
     postProcessor.process(gbuffer);

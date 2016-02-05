@@ -7,7 +7,7 @@ import main.resources.ResourceLoader;
 
 public class BatcherBuffer {
 
-  private final static int MAX_INSTANCES = 1;
+  private final static int MAX_INSTANCES = 2;
   private final Mesh mesh = initialiseEmptyMesh();
   private final float[] vertices = new float[MAX_INSTANCES * 5 * 4];
   private final ShaderProgram colorShader = ResourceLoader.loadShader("data/buffer/color.vert", "data/buffer/color.frag");
