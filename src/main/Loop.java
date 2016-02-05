@@ -23,7 +23,7 @@ public class Loop implements Demo {
   private final RenderTextureUtility show = new RenderTextureUtility();
   private final PostProcessor postProcessor = PostProcessor.withSize(WIDTH, HEIGHT);
   private final PlanetRenderer planetRenderer = new PlanetRenderer();
-  private final DustRenderer dustRenderer = new DustRenderer();
+  private final DustRenderer dustRenderer = DustRenderer.withCapacity(16);
   private float elapsedTime = 0;
 
   @Override

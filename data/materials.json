@@ -5,10 +5,6 @@
       "color": "data/textures/planet6.jpg"
     },
     {
-      "name": "turret",
-      "color": "data/textures/turret-color.png"
-    },
-    {
       "name": "destruction-mask",
       "color": "data/textures/destruction-mask.png"
     },

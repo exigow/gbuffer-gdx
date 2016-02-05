@@ -50,8 +50,10 @@ public class PostProcessor {
       .bind("u_texture", colorPlusEmissiveBuffer)
       .flush();
 
+    blurer.blur(cutoffBuffer);
+
     flares.renderTo(bloomBuffer)
-      .bind("u_texture", cutoffBuffer)
+      .bind("u_texture", blurer.getResult())
       .bind("u_texture_lens_dirt", lensDirt)
       .flush();
 
@@ -65,22 +67,22 @@ public class PostProcessor {
       .paramterize("texel", 1f / width, 1f / height)
       .flush();
 
-    fxaa.renderTo(secondTempBuffer)
+    /*fxaa.renderTo(secondTempBuffer)
       .bind("u_texture", firstTempBuffer)
       .paramterize("FXAA_REDUCE_MIN", 1f / 128f)
       .paramterize("FXAA_REDUCE_MUL", 1f / 8f)
       .paramterize("FXAA_SPAN_MAX", 8f)
       .paramterize("texel", 1f / width, 1f / height)
-      .flush();
+      .flush();*/
 
-    sharpen.renderTo(firstTempBuffer)
-      .bind("u_texture", secondTempBuffer)
+    sharpen.renderTo(secondTempBuffer)
+      .bind("u_texture", firstTempBuffer)
       .paramterize("texel", 1f / width, 1f / height)
       .flush();
   }
 
   public Texture getResult() {
-    return firstTempBuffer.getColorBufferTexture();
+    return secondTempBuffer.getColorBufferTexture();
   }
   
 }
