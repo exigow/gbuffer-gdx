@@ -4,7 +4,8 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import main.resources.Materials;
+import main.resources.MaterialStock;
+import main.resources.ShipDefinitionStock;
 
 import java.util.function.Supplier;
 
@@ -23,7 +24,8 @@ public class GdxInitializer extends ApplicationAdapter {
 
   @Override
   public void create() {
-    Materials.initialise();
+    MaterialStock.initialise();
+    ShipDefinitionStock.initialise();
     demo = supplier.get();
   }
 

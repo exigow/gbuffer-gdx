@@ -4,10 +4,13 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import main.camera.CameraController;
+import main.game.Ship;
 import main.rendering.*;
 import main.rendering.postprocess.PostProcessor;
 import main.rendering.utils.RenderTextureUtility;
-import main.resources.Materials;
+import main.resources.MaterialStock;
+import main.resources.ShipDefinition;
+import main.resources.ShipDefinitionStock;
 import main.runner.Demo;
 import main.runner.GdxInitializer;
 
@@ -25,6 +28,15 @@ public class Loop implements Demo {
   private final PlanetRenderer planetRenderer = new PlanetRenderer();
   private final DustRenderer dustRenderer = DustRenderer.withCapacity(256);
   private float elapsedTime = 0;
+  private final Ship testShip;
+
+  {
+    testShip = new Ship();
+    testShip.x = 1;
+    testShip.y = 1;
+    testShip.angle = 1;
+    testShip.definition = ShipDefinitionStock.get("test-fighter");
+  }
 
   @Override
   public void onUpdate(float delta) {
@@ -38,15 +50,21 @@ public class Loop implements Demo {
     gbuffer.clearSubBuffers();
 
     gbuffer.color.begin();
-    show.show(Materials.get("back").color);
+    show.show(MaterialStock.get("back").color);
     dustRenderer.render(true);
     gbuffer.color.end();
 
     elapsedTime += delta;
     planetRenderer.render(gbuffer, elapsedTime);
-    renderRotatedQuad(0, 0, 1, 256, Color.WHITE);
-    Vector2 mouse = cameraController.unprojectedMouse();
-    renderRotatedQuad(mouse.x, mouse.y, 1, 256, Color.WHITE);
+
+    // -----------------
+    renderRotatedQuad(testShip.x, testShip.y, testShip.angle, 256, Color.WHITE);
+    // -----------------
+
+
+    //renderRotatedQuad(0, 0, 1, 256, Color.WHITE);
+    //Vector2 mouse = cameraController.unprojectedMouse();
+    //renderRotatedQuad(mouse.x, mouse.y, 1, 256, Color.WHITE);
     GBufferFiller.fill(batcherBuffer, gbuffer);
     batcherBuffer.reset();
 

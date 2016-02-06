@@ -2,23 +2,23 @@ package main.rendering;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import main.resources.Materials;
+import main.resources.MaterialStock;
 
 public class GBufferFiller {
 
   public static void fill(BatcherBuffer buffer, GBuffer gbuffer) {
     enableAlphaBlending();
 
-    gbuffer.color.begin();;
-    buffer.paintColor(Materials.get("ship").color);
+    gbuffer.color.begin();
+    buffer.paintColor(MaterialStock.get("ship").color);
     gbuffer.color.end();
 
     gbuffer.emissive.begin();
-    buffer.paintEmissive(Materials.get("ship").emissive);
+    buffer.paintEmissive(MaterialStock.get("ship").emissive);
     gbuffer.emissive.end();
 
     gbuffer.ids.begin();
-    buffer.paintIds(Materials.get("ship").color);
+    buffer.paintIds(MaterialStock.get("ship").color);
     gbuffer.ids.end();
 
     disableAlphaBlending();

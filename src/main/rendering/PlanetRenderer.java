@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
-import main.resources.Materials;
+import main.resources.MaterialStock;
 import main.resources.ResourceLoader;
 
 public class PlanetRenderer {
@@ -20,8 +20,8 @@ public class PlanetRenderer {
   public void render(GBuffer gbuffer, float time) {
     Gdx.gl.glEnable(GL20.GL_BLEND);
     Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-    Materials.get("planet").color.bind(0);
-    Materials.get("planet-atmosphere").color.bind(1);
+    MaterialStock.get("planet").color.bind(0);
+    MaterialStock.get("planet-atmosphere").color.bind(1);
     gbuffer.color.begin();
     shader.begin();
     shader.setUniformMatrix("u_projTrans", projectionMatrix);

@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import main.resources.Materials;
+import main.resources.MaterialStock;
 import main.resources.ResourceLoader;
 
 import static com.badlogic.gdx.math.MathUtils.random;
@@ -58,7 +58,7 @@ public class DustRenderer {
     Gdx.gl.glEnable(GL20.GL_VERTEX_PROGRAM_POINT_SIZE);
     int GL_POINT_SPRITE_OES = 0x8861; // hack, its disabled
     Gdx.gl.glEnable(GL_POINT_SPRITE_OES);
-    Materials.get("star").color.bind(0);
+    MaterialStock.get("star").color.bind(0);
     shader.begin();
     shader.setUniformMatrix("projection", projection);
     shader.setUniformi("texture", 0);

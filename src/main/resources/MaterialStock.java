@@ -8,23 +8,25 @@ import com.google.gson.JsonObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Materials {
+public class MaterialStock {
 
   private static final Map<String, Material> MAP = new HashMap<>();
 
-  private Materials() {
+  private MaterialStock() {
+  }
+
+  public static void initialise() {
     JsonObject json = ResourceLoader.loadJson("data/materials.json");
     JsonArray mats = json.getAsJsonArray("materials");
     for (JsonElement o : mats) {
       JsonObject props = o.getAsJsonObject();
-      String name = props.get("id").getAsString();
+      String id = props.get("id").getAsString();
       String color = asNullableString(props, "color");
       String emissive = asNullableString(props, "emissive");
-
       Material mat = new Material();
       mat.color = loadTextureNullable(color);
       mat.emissive = loadTextureNullable(emissive);
-      MAP.put(name, mat);
+      MAP.put(id, mat);
     }
   }
 
@@ -41,10 +43,6 @@ public class Materials {
     if (e.isJsonNull())
       return null;
     return e.getAsString();
-  }
-
-  public static void initialise() {
-    new Materials();
   }
 
   public static Material get(String name) {
