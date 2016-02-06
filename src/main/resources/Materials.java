@@ -17,7 +17,7 @@ public class Materials {
     JsonArray mats = json.getAsJsonArray("materials");
     for (JsonElement o : mats) {
       JsonObject props = o.getAsJsonObject();
-      String name = asNullableString(props, "name");
+      String name = props.get("id").getAsString();
       String color = asNullableString(props, "color");
       String emissive = asNullableString(props, "emissive");
 
@@ -50,7 +50,7 @@ public class Materials {
   public static Material get(String name) {
     Material ref = MAP.get(name);
     if (ref == null)
-      throw new RuntimeException("Material (name: " + name + ") not found");
+      throw new RuntimeException("Material (id: " + name + ") not found");
     return ref;
   }
 

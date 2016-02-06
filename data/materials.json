@@ -1,48 +1,48 @@
 {
   "materials": [
     {
-      "name": "planet",
+      "id": "planet",
       "color": "data/textures/planet6.jpg"
     },
     {
-      "name": "star",
+      "id": "star",
       "color": "data/textures/star.png"
     },
     {
-      "name": "destruction-mask",
+      "id": "destruction-mask",
       "color": "data/textures/destruction-mask.png"
     },
     {
-      "name": "hull",
+      "id": "hull",
       "color": "data/textures/hull-pattern.png"
     },
     {
-      "name": "fire-pattern",
+      "id": "fire-pattern",
       "color": "data/textures/fire-pattern.png"
     },
     {
-      "name": "burnout",
+      "id": "burnout",
       "color": "data/textures/burnout.png"
     },
     {
-      "name": "fire-pattern-mask",
+      "id": "fire-pattern-mask",
       "color": "data/textures/fire-pattern-mask.png"
     },
     {
-      "name": "planet-atmosphere",
+      "id": "planet-atmosphere",
       "color": "data/textures/planet-atmosphere.png"
     },
     {
-      "name": "ship",
+      "id": "ship",
       "color": "data/textures/ship-color.png",
       "emissive": "data/textures/ship-emissive.png"
     },
     {
-      "name": "back",
+      "id": "back",
       "color": "data/textures/back2.jpg"
     },
     {
-      "name": "pattern",
+      "id": "pattern",
       "color": "data/textures/pattern.png"
     }
   ]
