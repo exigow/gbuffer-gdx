@@ -50,7 +50,7 @@ public class DustRenderer {
 
   public void updateProjection(Matrix4 actualized) {
     projection.set(actualized);
-}
+  }
 
   public void render(boolean isBelow) {
     Gdx.gl.glEnable(GL20.GL_BLEND);

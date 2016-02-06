@@ -1,0 +1,35 @@
+{
+  "id": "test-fighter",
+  "fullName": "Foraker Ion Assault Frigate",
+  "materialId": "ship",
+  "centerX": 128,
+  "centerY": 128,
+  "acceleration": 75,
+  "maxSpeed": 300,
+  "engines": [
+    {
+      "positionX": 160,
+      "positionY": 192,
+      "radius": 24
+    },
+    {
+      "positionX": 96,
+      "positionY": 192,
+      "radius": 24
+    }
+  ],
+  "weapons": [
+    {
+      "fullName": "Ion Cannon Turret (right)",
+      "positionX": 160,
+      "positionY": 64,
+      "radius": 32
+    },
+    {
+      "fullName": "Ion Cannon Turret (left)",
+      "positionX": 96,
+      "positionY": 64,
+      "radius": 32
+    }
+  ]
+}

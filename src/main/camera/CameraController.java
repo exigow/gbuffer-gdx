@@ -29,7 +29,7 @@ public class CameraController {
   public void update(float delta) {
     Vector3 movement = calcMovementVectorFromInput().scl(delta);
     target.add(movement);
-    target.z = clamp(target.z, -1024, -16);
+    target.z = clamp(target.z, -1024, -128);
     moveEyeToTarget(delta);
     updateOrthographicCameraState();
   }
