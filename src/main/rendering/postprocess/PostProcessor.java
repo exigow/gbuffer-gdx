@@ -64,7 +64,6 @@ public class PostProcessor {
 
     aberration.renderTo(firstTempBuffer)
       .bind("u_texture", secondTempBuffer)
-      .paramterize("texel", 1f / width, 1f / height)
       .flush();
 
     /*fxaa.renderTo(secondTempBuffer)
