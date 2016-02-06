@@ -88,11 +88,11 @@ public class UserInterfaceRenderer {
     Rectangle rect = button.rect;
     shape.begin(ShapeRenderer.ShapeType.Filled);
     shape.setColor(1, 1, 1, .5f);
-    float asd = (rect.width / 2) * button.time;
+    float updateVertices = (rect.width / 2) * button.time;
     float midx = rect.x + rect.width / 2;
     float y = rect.y + addY;
-    float ax = midx - asd;
-    float bx = midx + asd;
+    float ax = midx - updateVertices;
+    float bx = midx + updateVertices;
     shape.rectLine(ax, y, bx, y, 2);
     shape.setColor(1, 1, 1, 1);
     shape.circle(ax, y, 3, 4);

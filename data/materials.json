@@ -9,26 +9,6 @@
       "color": "data/textures/star.png"
     },
     {
-      "id": "destruction-mask",
-      "color": "data/textures/destruction-mask.png"
-    },
-    {
-      "id": "hull",
-      "color": "data/textures/hull-pattern.png"
-    },
-    {
-      "id": "fire-pattern",
-      "color": "data/textures/fire-pattern.png"
-    },
-    {
-      "id": "burnout",
-      "color": "data/textures/burnout.png"
-    },
-    {
-      "id": "fire-pattern-mask",
-      "color": "data/textures/fire-pattern-mask.png"
-    },
-    {
       "id": "planet-atmosphere",
       "color": "data/textures/planet-atmosphere.png"
     },
@@ -40,10 +20,6 @@
     {
       "id": "back",
       "color": "data/textures/back2.jpg"
-    },
-    {
-      "id": "pattern",
-      "color": "data/textures/pattern.png"
     }
   ]
 }

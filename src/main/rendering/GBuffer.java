@@ -7,6 +7,8 @@ import main.rendering.utils.FrameBufferCreator;
 
 public class GBuffer {
 
+  // todo singleton. gbuffer jest tylko jeden, po co instancja
+
   public final FrameBuffer color;
   public final FrameBuffer emissive;
   public final FrameBuffer ids;
