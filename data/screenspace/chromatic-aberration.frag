@@ -11,18 +11,21 @@ vec2 uvDistortion(float k, float kcube) {
     return vec2(x, y);
 }
 
-const vec3 spectrumSample[5] = {
-    vec3(.5, 0, 0),
-    vec3(.5, .3333, 0),
-    vec3(0, .3333, 0),
-    vec3(0, .3333, .5),
-    vec3(0, 0, .5)
+const vec3 spectrumSample[8] = {
+    vec3(.5,    0, 0),
+    vec3(.25,   .125, 0),
+    vec3(.125,  .125, 0),
+    vec3(.0625, .25, .0625),
+    vec3(.0625, .25, .0625),
+    vec3(0,     .125, .125),
+    vec3(0,     .125, .25),
+    vec3(0,     0, .5)
 };
 
 void main() {
     vec3 color = vec3(0);
-    for (int i = 0; i < 5; i++) {
-        float n = i / 5.0;
+    for (int i = 0; i < 8; i++) {
+        float n = i / 8.0;
         vec2 coord = uvDistortion(-.075 * n, n * .025);
         color += texture2D(u_texture, coord).rgb * spectrumSample[i];
     }
