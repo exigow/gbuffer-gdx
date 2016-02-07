@@ -81,10 +81,23 @@ public class Loop implements Demo {
     ShipDefinition def = testShip.definition;
     materialRenderer.render(testShip.x, testShip.y, testShip.angle, gbuffer, MaterialStock.get(def.materialId));
     for (ShipDefinition.Weapon weapon : def.weapons) {
-      float x = testShip.x + MathUtils.cos(testShip.angle) * weapon.x + MathUtils.cos(testShip.angle + MathUtils.PI / 2) * weapon.y;
-      float y = testShip.y + MathUtils.sin(testShip.angle) * weapon.x + MathUtils.sin(testShip.angle + MathUtils.PI / 2) * weapon.y;
+      float x = testShip.x + cx(weapon.x, weapon.y);
+      float y = testShip.y + cy(weapon.x, weapon.y);
       materialRenderer.render(x, y, elapsedTime, gbuffer, MaterialStock.get("turret"));
     }
+    for (ShipDefinition.Engine weapon : def.engines) {
+      float x = testShip.x + cx(weapon.x, weapon.y);
+      float y = testShip.y + cy(weapon.x, weapon.y);
+      materialRenderer.render(x, y, -elapsedTime, gbuffer, MaterialStock.get("turret"));
+    }
+  }
+
+  private float cx(float x, float y) {
+    return MathUtils.cos(testShip.angle) * x + MathUtils.cos(testShip.angle + MathUtils.PI / 2) * y;
+  }
+
+  private float cy(float x, float y) {
+    return MathUtils.sin(testShip.angle) * x + MathUtils.sin(testShip.angle + MathUtils.PI / 2) *y;
   }
 
   public static void main(String[] args) {

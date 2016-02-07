@@ -11,12 +11,7 @@
       "engines": [
         {
           "positionX": 0,
-          "positionY": 0,
-          "selectionRadius": 24
-        },
-        {
-          "positionX": 0,
-          "positionY": 0,
+          "positionY": 112,
           "selectionRadius": 24
         }
       ],

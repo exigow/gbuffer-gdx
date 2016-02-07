@@ -33,6 +33,7 @@ public class ShipDefinitionStock {
     definition.fullName = source.get("name").getAsString();
     definition.materialId = source.get("materialId").getAsString();
     definition.weapons = parseWeapons(source);
+    definition.engines = parseEngines(source);
     return definition;
   }
 
@@ -44,6 +45,18 @@ public class ShipDefinitionStock {
       weapon.x = w.get("positionX").getAsFloat();
       weapon.y = w.get("positionY").getAsFloat();
       weapons.add(weapon);
+    }
+    return weapons;
+  }
+
+  private static Iterable<ShipDefinition.Engine> parseEngines(JsonObject source) {
+    Collection<ShipDefinition.Engine> weapons = new ArrayList<>();
+    for (JsonElement o : source.getAsJsonArray("engines")) {
+      JsonObject w = o.getAsJsonObject();
+      ShipDefinition.Engine engine = new ShipDefinition.Engine();
+      engine.x = w.get("positionX").getAsFloat();
+      engine.y = w.get("positionY").getAsFloat();
+      weapons.add(engine);
     }
     return weapons;
   }
