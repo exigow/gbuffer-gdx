@@ -10,27 +10,27 @@
       "maxSpeed": 300,
       "engines": [
         {
-          "positionX": 160,
-          "positionY": 192,
+          "positionX": 0,
+          "positionY": 0,
           "selectionRadius": 24
         },
         {
-          "positionX": 96,
-          "positionY": 192,
+          "positionX": 0,
+          "positionY": 0,
           "selectionRadius": 24
         }
       ],
       "weapons": [
         {
           "name": "Ion Cannon Turret (right)",
-          "positionX": 160,
-          "positionY": 64,
+          "positionX": 48,
+          "positionY": -4,
           "selectionRadius": 32
         },
         {
           "name": "Ion Cannon Turret (left)",
-          "positionX": 96,
-          "positionY": 64,
+          "positionX": -48,
+          "positionY": -4,
           "selectionRadius": 32
         }
       ]

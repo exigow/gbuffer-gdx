@@ -18,6 +18,10 @@
       "emissive": "data/textures/ship-emissive.png"
     },
     {
+      "id": "turret",
+      "color": "data/textures/turret.png"
+    },
+    {
       "id": "back",
       "color": "data/textures/back2.jpg"
     }

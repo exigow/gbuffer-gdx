@@ -18,7 +18,10 @@ public class MaterialRenderer {
   private final ShaderProgram emissiveShader = ResourceLoader.loadShader("data/buffer/color.vert", "data/buffer/emissive.frag");
 
   public void render(float x, float y, float rotation, GBuffer gbuffer, Material material) {
-    updateVertices(x, y, rotation);
+    float width = material.color.getWidth();
+    float height = material.color.getHeight();
+
+    updateVertices(x, y, rotation, width);
     mesh.setVertices(vertices);
 
     Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -28,17 +31,18 @@ public class MaterialRenderer {
     paintColor(material.color);
     gbuffer.color.end();
 
-    gbuffer.emissive.begin();
-    paintEmissive(material.emissive);
-    gbuffer.emissive.end();
+    if (material.emissive != null) {
+      gbuffer.emissive.begin();
+      paintEmissive(material.emissive);
+      gbuffer.emissive.end();
+    }
 
     Gdx.gl.glDisable(GL20.GL_BLEND);
   }
 
-  public void updateVertices(float x, float y, float rotation) {
-    float size = 256;
-    float cos = MathUtils.cos(rotation);
-    float sin = MathUtils.sin(rotation);
+  public void updateVertices(float x, float y, float rotation, float size) {
+    float cos = MathUtils.cos(rotation + MathUtils.PI / 4f);
+    float sin = MathUtils.sin(rotation + MathUtils.PI / 4f);
     vertices[0] = x - cos * size;
     vertices[1] = y - sin * size;
     vertices[2] = 0;

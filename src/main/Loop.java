@@ -1,5 +1,9 @@
 package main;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import main.camera.CameraController;
 import main.game.Ship;
 import main.rendering.DustRenderer;
@@ -9,6 +13,7 @@ import main.rendering.PlanetRenderer;
 import main.rendering.postprocess.PostProcessor;
 import main.rendering.utils.RenderTextureUtility;
 import main.resources.MaterialStock;
+import main.resources.ShipDefinition;
 import main.resources.ShipDefinitionStock;
 import main.runner.Demo;
 import main.runner.GdxInitializer;
@@ -31,12 +36,20 @@ public class Loop implements Demo {
     testShip = new Ship();
     testShip.x = 1;
     testShip.y = 1;
-    testShip.angle = 1;
+    testShip.angle = 0;
     testShip.definition = ShipDefinitionStock.get("test-fighter");
   }
 
   @Override
   public void onUpdate(float delta) {
+    if (Gdx.input.isButtonPressed(Input.Buttons.LEFT))
+      testShip.angle += .025;
+    if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT))
+      testShip.angle -= .025;
+    Vector2 mouse = cameraController.unprojectedMouse();
+    testShip.x = mouse.x;
+    testShip.y = mouse.y;
+
     cameraController.update(delta);
 
     materialRenderer.updateProjection(cameraController.matrix());
@@ -54,7 +67,7 @@ public class Loop implements Demo {
     elapsedTime += delta;
     planetRenderer.render(gbuffer, elapsedTime);
 
-    materialRenderer.render(0, 0, 1, gbuffer, MaterialStock.get("ship"));
+    renderShip();
 
     gbuffer.color.begin();
     dustRenderer.render(false);
@@ -62,6 +75,16 @@ public class Loop implements Demo {
 
     postProcessor.process(gbuffer);
     show.show(postProcessor.getResult());
+  }
+
+  private void renderShip() {
+    ShipDefinition def = testShip.definition;
+    materialRenderer.render(testShip.x, testShip.y, testShip.angle, gbuffer, MaterialStock.get(def.materialId));
+    for (ShipDefinition.Weapon weapon : def.weapons) {
+      float x = testShip.x + MathUtils.cos(testShip.angle) * weapon.x + MathUtils.cos(testShip.angle + MathUtils.PI / 2) * weapon.y;
+      float y = testShip.y + MathUtils.sin(testShip.angle) * weapon.x + MathUtils.sin(testShip.angle + MathUtils.PI / 2) * weapon.y;
+      materialRenderer.render(x, y, elapsedTime, gbuffer, MaterialStock.get("turret"));
+    }
   }
 
   public static void main(String[] args) {
